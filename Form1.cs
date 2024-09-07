@@ -18,7 +18,7 @@ namespace LabDataHelper
 			manager.OnChnage += onChange;
 			updateInfo();
 			textBox2.KeyDown += (o, e) =>
-			{
+				{
 				if (e.KeyCode == Keys.Enter)
 				{
 					try
@@ -188,7 +188,7 @@ namespace LabDataHelper
 				else
 				{
 
-					sb.AppendLine("平均值:" + set.Mean + " 极限偏差:" + (set.Max - set.Min));
+				sb.AppendLine("平均值:" + set.Mean + " 极限偏差:" + (set.Max - set.Min));
 				}
 				richTextBox3.Text = sb.ToString();
 				richTextBox3.Select(richTextBox3.Text.Length - 1, 0);
