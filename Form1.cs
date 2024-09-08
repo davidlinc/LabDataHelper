@@ -9,27 +9,35 @@ namespace LabDataHelper
 		DataManager manager = new DataManager("数据");
 		MathObjectManager managerM = new MathObjectManager();
 		DataConverter converter;
+		Settings settings = new Settings();
 		string unit;
 		int lastSelect;
 		public Form1()
 		{
 			InitializeComponent();
-			DVOS.stringWriter = (s) => { richTextBox3.Text+= s ; };
+		
+			DVOS.stringWriter = (s) => { richTextBox3.Text += s; };
 			manager.OnChnage += onChange;
+			if (File.Exists("settings.data"))
+			{
+				settings.load("settings.data");
+				textBox1.Text = settings.lastName;
+				manager.name = settings.lastName;
+			}
 			updateInfo();
 			textBox2.KeyDown += (o, e) =>
 				{
-				if (e.KeyCode == Keys.Enter)
-				{
-					try
+					if (e.KeyCode == Keys.Enter)
 					{
-						manager.addValue(comboBox1.SelectedIndex, double.Parse(textBox2.Text));
-						textBox2.Text = "";
-						textBox2.Focus();
+						try
+						{
+							manager.addValue(comboBox1.SelectedIndex, double.Parse(textBox2.Text));
+							textBox2.Text = "";
+							textBox2.Focus();
+						}
+						catch { }
 					}
-					catch { }
-				}
-			};
+				};
 		}
 		void updateInfo()
 		{
@@ -126,25 +134,15 @@ namespace LabDataHelper
 
 		void readDescribe(string s)
 		{
-			s=s.Trim();
-			var p= s.findString("unit=");
-			if (p.Count>0)
-			{
-				int pos=p.First();
-				var v = s.AsSpan(pos+5);
-				int end = v.findFirstChar(';');
-				unit=v.Slice(0,end).ToString();
 
-			}
-			 p = s.findString("data=");
+			s = s.Trim();
+			var p = s.findString("unit=");
 			if (p.Count > 0)
 			{
 				int pos = p.First();
 				var v = s.AsSpan(pos + 5);
 				int end = v.findFirstChar(';');
-				string ss = v.Slice(0, end).ToString();
-				var cv = managerM.Scan(ss);
-				converter=d=>cv.getValue(d);
+				unit = v.Slice(0, end).ToString();
 
 			}
 			p = s.findString("run{");
@@ -154,12 +152,24 @@ namespace LabDataHelper
 				var v = s.AsSpan(pos + 4);
 				int end = v.findFirstChar('}');
 				string runs = v.Slice(0, end).ToString();
-				string[] strings=runs.Split(';',StringSplitOptions.RemoveEmptyEntries);
-				foreach(var vvv in strings)
+				string[] strings = runs.Split(';', StringSplitOptions.RemoveEmptyEntries);
+				foreach (var vvv in strings)
 				{
 					managerM.Add(vvv);
 				}
 			}
+			p = s.findString("data=");
+			if (p.Count > 0)
+			{
+				int pos = p.First();
+				var v = s.AsSpan(pos + 5);
+				int end = v.findFirstChar(';');
+				string ss = v.Slice(0, end).ToString();
+				var cv = managerM.Scan(ss);
+				converter = d => cv.getValue(d);
+
+			}
+		
 		}
 		void updateSetInfo()
 		{
@@ -169,26 +179,27 @@ namespace LabDataHelper
 				StringBuilder sb = new StringBuilder();
 				for (int i = 0; i < set.Count; i++)
 				{
-					
-					if(converter!=null&&unit!=null)
+
+					if (converter != null && unit != null)
 					{
-						sb.AppendLine(set[i].ToString()+" "+set[i,converter].ToString()+unit);
-						
+						sb.AppendLine(set[i].ToString() + " " + set[i, converter].ToString() + unit);
+
 					}
 					else
 					{
+						sb.AppendLine(set[i].ToString());
 
 					}
 				}
 				if (converter != null && unit != null)
 				{
 
-					sb.AppendLine("平均值:" + set.getMean(converter)+unit + " 极限偏差:" + (set.getMax(converter) - set.getMax(converter)) + unit);
+					sb.AppendLine("平均值:" + set.getMean(converter) + unit + " 极限偏差:" + (set.getMax(converter) - set.getMax(converter)) + unit);
 				}
 				else
 				{
 
-				sb.AppendLine("平均值:" + set.Mean + " 极限偏差:" + (set.Max - set.Min));
+					sb.AppendLine("平均值:" + set.Mean + " 极限偏差:" + (set.Max - set.Min));
 				}
 				richTextBox3.Text = sb.ToString();
 				richTextBox3.Select(richTextBox3.Text.Length - 1, 0);
@@ -211,11 +222,11 @@ namespace LabDataHelper
 		{
 			if (comboBox1.SelectedItem is DataSet)
 			{
-			
-					manager.addValue(comboBox1.SelectedIndex, managerM.Scan(textBox2.Text).getValue(1));
-					textBox2.Text = "";
-					textBox2.Focus();
-				
+
+				manager.addValue(comboBox1.SelectedIndex, managerM.Scan(textBox2.Text).getValue(1));
+				textBox2.Text = "";
+				textBox2.Focus();
+
 			}
 		}
 
@@ -262,11 +273,18 @@ namespace LabDataHelper
 
 		private void button5_Click(object sender, EventArgs e)
 		{
+
+			converter = null;
+			unit = null;
+			managerM.clear();
 			if (!Directory.Exists("data"))
 			{
 				Directory.CreateDirectory("data");
 			}
 			manager.save("data\\" + manager.name + ".data");
+			readDescribe(manager.describe);
+			settings.lastName= manager.name;
+			settings.save("settings.data");
 		}
 
 		private void button6_Click(object sender, EventArgs e)
@@ -276,6 +294,9 @@ namespace LabDataHelper
 				manager.load("data\\" + manager.name + ".data");
 				updateCombo1();
 				richTextBox1.Text = manager.describe;
+				converter = null;
+				unit = null;
+				managerM.clear();
 				readDescribe(manager.describe);
 			}
 
@@ -300,10 +321,15 @@ namespace LabDataHelper
 			}
 		}
 
-		private void button9_Click(object sender, EventArgs e)
+	
+		private void button9_Click_1(object sender, EventArgs e)
 		{
-			var v=managerM.Scan(textBox2.Text);
-			richTextBox1.Text = "" + v.getValue(10);
+
+			managerM.Add(textBox2.Text);
+				textBox2.Text = "";
+				textBox2.Focus();
+
+			
 		}
 	}
 }
