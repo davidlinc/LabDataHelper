@@ -1,5 +1,6 @@
 using DVLib.LabDataHelper;
 using DVOSLib;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace LabDataHelper
@@ -15,13 +16,14 @@ namespace LabDataHelper
 		public Form1()
 		{
 			InitializeComponent();
-
+			comboBox3.TextChanged += nameChanged;
+			comboBox3.Click += (o, e) => { updateFiles(); };
 			DVOS.stringWriter = (s) => { richTextBox4.Text += s; };
 			manager.OnChnage += onChange;
 			if (File.Exists("settings.data"))
 			{
 				settings.load("settings.data");
-				textBox1.Text = settings.lastName;
+				comboBox3.Text = settings.lastName;
 				manager.name = settings.lastName;
 			}
 			updateInfo();
@@ -39,10 +41,83 @@ namespace LabDataHelper
 					}
 				};
 		}
+		void updateFiles()
+		{
+			string path = "data";
+			if (!Directory.Exists(path))
+			{
+				Directory.CreateDirectory(path);
+			}
+			DirectoryInfo directory = new DirectoryInfo(path);
+			comboBox3.Items.Clear();
+			foreach (FileInfo file in directory.GetFiles())
+			{
+				if (file.Extension.ToLower().Equals(".data"))
+				{
+					comboBox3.Items.Add(file.Name.Remove(file.Name.Length - 5));
+				}
+			}
+		}
+		public int charToInt(char c)
+		{
+			if (c >= '0' && c <= '9')
+			{
+				return c - '0';
+			}
+			if (c >= 'a' && c <= 'f')
+			{
+				return (int)(c - 'a' + 10);
+			}
+			return 0;
+		}
+
+		int c = 16;
+		int b = 16 * 16;
+		int a = 16 * 16 * 16;
+		public int getFrom16(ReadOnlySpan<char> data)
+		{
+			int v = ((charToInt(data[0]) * c + charToInt(data[1]) + charToInt(data[2]) * a + charToInt(data[3]) * b));
+			return v;
+		}
+		public string clean(string raw)
+		{
+			List<char> chars = new List<char>();
+			foreach (var c in raw)
+			{
+				if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))
+				{
+					chars.Add(c);
+				}
+			}
+			return new string(chars.ToArray());
+		}
+		public Int16[] readLZZ(string s)
+		{
+			s = clean(s.ToLower());
+
+			ReadOnlySpan<char> s1 = s.AsSpan();
+
+			int l = s.Length / 4;
+			int b = s.Length / 2;
+			int j = 0;
+			Int16[] r = new Int16[l];
+			for (int i = 0; i < s1.Length; i += 4)
+			{
+
+				r[j] = (short)getFrom16(s1.Slice(i, 4));
+				j++;
+			}
+
+			return r;
+		}
+		void nameChanged(object sender, EventArgs e)
+		{
+			manager.name = comboBox3.Text;
+		}
 		void updateInfo()
 		{
 
-			textBox1.Text = manager.name;
+			comboBox3.Text = manager.name;
 			richTextBox1.Text = manager.describe;
 
 		}
@@ -119,7 +194,7 @@ namespace LabDataHelper
 		}
 		private void textBox1_TextChanged(object sender, EventArgs e)
 		{
-			manager.name = textBox1.Text;
+			manager.name = comboBox3.Text;
 		}
 
 		private void button3_Click(object sender, EventArgs e)
@@ -194,7 +269,7 @@ namespace LabDataHelper
 				if (converter != null && unit != null)
 				{
 
-					sb.AppendLine("数据:"+set.Count+" 平均值:" + set.getMean(converter) + unit + " 极限偏差:" + (converter(set.Max-set.Min)) + unit);
+					sb.AppendLine("数据:" + set.Count + " 平均值:" + set.getMean(converter) + unit + " 极限偏差:" + (converter(set.Max - set.Min)) + unit);
 				}
 				else
 				{
@@ -328,6 +403,38 @@ namespace LabDataHelper
 			managerM.Run(textBox2.Text);
 			textBox2.Text = "";
 			textBox2.Focus();
+
+
+		}
+
+		private void button10_Click(object sender, EventArgs e)
+		{
+			Int16[] is16 = readLZZ(richTextBox4.Text);
+			richTextBox4.Text = "";
+			int index;
+			if (comboBox1.SelectedItem is DataSet)
+			{
+				index = comboBox1.SelectedIndex;
+			}
+			else
+			{
+				index = manager.addNewData("16进制", "");
+			}
+			int max = (int)numericUpDown1.Value;
+			int j = 0;
+			foreach (Int16 i in is16)
+			{
+				manager.addValue(index, i);
+				j++;
+				if(j == max)
+				{
+					break;
+				}
+			}
+		}
+
+		private void richTextBox4_TextChanged(object sender, EventArgs e)
+		{
 
 
 		}

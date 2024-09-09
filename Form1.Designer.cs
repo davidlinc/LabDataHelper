@@ -28,7 +28,6 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			textBox1 = new TextBox();
 			richTextBox1 = new RichTextBox();
 			comboBox1 = new ComboBox();
 			textBox2 = new TextBox();
@@ -49,16 +48,12 @@
 			button8 = new Button();
 			button9 = new Button();
 			richTextBox4 = new RichTextBox();
+			comboBox3 = new ComboBox();
+			button10 = new Button();
+			numericUpDown1 = new NumericUpDown();
+			label5 = new Label();
+			((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
 			SuspendLayout();
-			// 
-			// textBox1
-			// 
-			textBox1.Location = new Point(104, 38);
-			textBox1.Margin = new Padding(4);
-			textBox1.Name = "textBox1";
-			textBox1.Size = new Size(278, 38);
-			textBox1.TabIndex = 0;
-			textBox1.TextChanged += textBox1_TextChanged;
 			// 
 			// richTextBox1
 			// 
@@ -263,16 +258,58 @@
 			richTextBox4.Location = new Point(967, 405);
 			richTextBox4.Margin = new Padding(4);
 			richTextBox4.Name = "richTextBox4";
-			richTextBox4.ReadOnly = true;
 			richTextBox4.Size = new Size(634, 174);
 			richTextBox4.TabIndex = 20;
 			richTextBox4.Text = "";
+			richTextBox4.TextChanged += richTextBox4_TextChanged;
+			// 
+			// comboBox3
+			// 
+			comboBox3.FormattingEnabled = true;
+			comboBox3.Location = new Point(104, 44);
+			comboBox3.Margin = new Padding(4);
+			comboBox3.Name = "comboBox3";
+			comboBox3.Size = new Size(287, 39);
+			comboBox3.TabIndex = 21;
+			// 
+			// button10
+			// 
+			button10.Location = new Point(1459, 587);
+			button10.Margin = new Padding(4);
+			button10.Name = "button10";
+			button10.Size = new Size(142, 46);
+			button10.TabIndex = 22;
+			button10.Text = "转换";
+			button10.UseVisualStyleBackColor = true;
+			button10.Click += button10_Click;
+			// 
+			// numericUpDown1
+			// 
+			numericUpDown1.Location = new Point(1212, 593);
+			numericUpDown1.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
+			numericUpDown1.Name = "numericUpDown1";
+			numericUpDown1.Size = new Size(240, 38);
+			numericUpDown1.TabIndex = 23;
+			numericUpDown1.Value = new decimal(new int[] { 100, 0, 0, 0 });
+			// 
+			// label5
+			// 
+			label5.AutoSize = true;
+			label5.Location = new Point(1048, 595);
+			label5.Name = "label5";
+			label5.Size = new Size(158, 31);
+			label5.TabIndex = 24;
+			label5.Text = "最大转换数量";
 			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(14F, 31F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(1703, 616);
+			ClientSize = new Size(1703, 650);
+			Controls.Add(label5);
+			Controls.Add(numericUpDown1);
+			Controls.Add(button10);
+			Controls.Add(comboBox3);
 			Controls.Add(richTextBox4);
 			Controls.Add(button9);
 			Controls.Add(button8);
@@ -293,17 +330,15 @@
 			Controls.Add(textBox2);
 			Controls.Add(comboBox1);
 			Controls.Add(richTextBox1);
-			Controls.Add(textBox1);
 			Margin = new Padding(4);
 			Name = "Form1";
 			Text = "计数宝";
+			((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
 
 		#endregion
-
-		private TextBox textBox1;
 		private RichTextBox richTextBox1;
 		private ComboBox comboBox1;
 		private TextBox textBox2;
@@ -324,5 +359,9 @@
 		private Button button8;
 		private Button button9;
 		private RichTextBox richTextBox4;
+		private ComboBox comboBox3;
+		private Button button10;
+		private NumericUpDown numericUpDown1;
+		private Label label5;
 	}
 }
