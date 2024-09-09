@@ -48,12 +48,13 @@
 			label4 = new Label();
 			button8 = new Button();
 			button9 = new Button();
+			richTextBox4 = new RichTextBox();
 			SuspendLayout();
 			// 
 			// textBox1
 			// 
 			textBox1.Location = new Point(104, 38);
-			textBox1.Margin = new Padding(4, 4, 4, 4);
+			textBox1.Margin = new Padding(4);
 			textBox1.Name = "textBox1";
 			textBox1.Size = new Size(278, 38);
 			textBox1.TabIndex = 0;
@@ -62,7 +63,7 @@
 			// richTextBox1
 			// 
 			richTextBox1.Location = new Point(104, 98);
-			richTextBox1.Margin = new Padding(4, 4, 4, 4);
+			richTextBox1.Margin = new Padding(4);
 			richTextBox1.Name = "richTextBox1";
 			richTextBox1.Size = new Size(278, 285);
 			richTextBox1.TabIndex = 1;
@@ -73,7 +74,7 @@
 			// 
 			comboBox1.FormattingEnabled = true;
 			comboBox1.Location = new Point(500, 44);
-			comboBox1.Margin = new Padding(4, 4, 4, 4);
+			comboBox1.Margin = new Padding(4);
 			comboBox1.Name = "comboBox1";
 			comboBox1.Size = new Size(287, 39);
 			comboBox1.TabIndex = 2;
@@ -82,7 +83,7 @@
 			// textBox2
 			// 
 			textBox2.Location = new Point(502, 417);
-			textBox2.Margin = new Padding(4, 4, 4, 4);
+			textBox2.Margin = new Padding(4);
 			textBox2.Name = "textBox2";
 			textBox2.Size = new Size(285, 38);
 			textBox2.TabIndex = 3;
@@ -91,7 +92,7 @@
 			// button1
 			// 
 			button1.Location = new Point(645, 463);
-			button1.Margin = new Padding(4, 4, 4, 4);
+			button1.Margin = new Padding(4);
 			button1.Name = "button1";
 			button1.Size = new Size(142, 46);
 			button1.TabIndex = 4;
@@ -102,7 +103,7 @@
 			// button2
 			// 
 			button2.Location = new Point(1285, 40);
-			button2.Margin = new Padding(4, 4, 4, 4);
+			button2.Margin = new Padding(4);
 			button2.Name = "button2";
 			button2.Size = new Size(146, 46);
 			button2.TabIndex = 5;
@@ -113,7 +114,7 @@
 			// richTextBox2
 			// 
 			richTextBox2.Location = new Point(500, 100);
-			richTextBox2.Margin = new Padding(4, 4, 4, 4);
+			richTextBox2.Margin = new Padding(4);
 			richTextBox2.Name = "richTextBox2";
 			richTextBox2.Size = new Size(287, 285);
 			richTextBox2.TabIndex = 6;
@@ -123,7 +124,7 @@
 			// richTextBox3
 			// 
 			richTextBox3.Location = new Point(967, 100);
-			richTextBox3.Margin = new Padding(4, 4, 4, 4);
+			richTextBox3.Margin = new Padding(4);
 			richTextBox3.Name = "richTextBox3";
 			richTextBox3.ReadOnly = true;
 			richTextBox3.Size = new Size(634, 285);
@@ -134,7 +135,7 @@
 			// 
 			comboBox2.FormattingEnabled = true;
 			comboBox2.Location = new Point(967, 44);
-			comboBox2.Margin = new Padding(4, 4, 4, 4);
+			comboBox2.Margin = new Padding(4);
 			comboBox2.Name = "comboBox2";
 			comboBox2.Size = new Size(310, 39);
 			comboBox2.TabIndex = 8;
@@ -143,7 +144,7 @@
 			// button3
 			// 
 			button3.Location = new Point(809, 39);
-			button3.Margin = new Padding(4, 4, 4, 4);
+			button3.Margin = new Padding(4);
 			button3.Name = "button3";
 			button3.Size = new Size(150, 46);
 			button3.TabIndex = 9;
@@ -154,7 +155,7 @@
 			// button4
 			// 
 			button4.Location = new Point(1441, 40);
-			button4.Margin = new Padding(4, 4, 4, 4);
+			button4.Margin = new Padding(4);
 			button4.Name = "button4";
 			button4.Size = new Size(146, 46);
 			button4.TabIndex = 10;
@@ -165,7 +166,7 @@
 			// button5
 			// 
 			button5.Location = new Point(12, 558);
-			button5.Margin = new Padding(4, 4, 4, 4);
+			button5.Margin = new Padding(4);
 			button5.Name = "button5";
 			button5.Size = new Size(150, 46);
 			button5.TabIndex = 11;
@@ -176,7 +177,7 @@
 			// button6
 			// 
 			button6.Location = new Point(168, 558);
-			button6.Margin = new Padding(4, 4, 4, 4);
+			button6.Margin = new Padding(4);
 			button6.Name = "button6";
 			button6.Size = new Size(150, 46);
 			button6.TabIndex = 12;
@@ -187,7 +188,7 @@
 			// button7
 			// 
 			button7.Location = new Point(324, 558);
-			button7.Margin = new Padding(4, 4, 4, 4);
+			button7.Margin = new Padding(4);
 			button7.Name = "button7";
 			button7.Size = new Size(150, 46);
 			button7.TabIndex = 13;
@@ -238,7 +239,7 @@
 			// button8
 			// 
 			button8.Location = new Point(809, 89);
-			button8.Margin = new Padding(4, 4, 4, 4);
+			button8.Margin = new Padding(4);
 			button8.Name = "button8";
 			button8.Size = new Size(150, 46);
 			button8.TabIndex = 18;
@@ -257,11 +258,22 @@
 			button9.UseVisualStyleBackColor = true;
 			button9.Click += button9_Click_1;
 			// 
+			// richTextBox4
+			// 
+			richTextBox4.Location = new Point(967, 405);
+			richTextBox4.Margin = new Padding(4);
+			richTextBox4.Name = "richTextBox4";
+			richTextBox4.ReadOnly = true;
+			richTextBox4.Size = new Size(634, 174);
+			richTextBox4.TabIndex = 20;
+			richTextBox4.Text = "";
+			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(14F, 31F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(1703, 616);
+			Controls.Add(richTextBox4);
 			Controls.Add(button9);
 			Controls.Add(button8);
 			Controls.Add(label3);
@@ -282,7 +294,7 @@
 			Controls.Add(comboBox1);
 			Controls.Add(richTextBox1);
 			Controls.Add(textBox1);
-			Margin = new Padding(4, 4, 4, 4);
+			Margin = new Padding(4);
 			Name = "Form1";
 			Text = "计数宝";
 			ResumeLayout(false);
@@ -311,5 +323,6 @@
 		private Label label4;
 		private Button button8;
 		private Button button9;
+		private RichTextBox richTextBox4;
 	}
 }

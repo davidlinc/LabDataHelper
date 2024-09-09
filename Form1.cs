@@ -15,8 +15,8 @@ namespace LabDataHelper
 		public Form1()
 		{
 			InitializeComponent();
-		
-			DVOS.stringWriter = (s) => { richTextBox3.Text += s; };
+
+			DVOS.stringWriter = (s) => { richTextBox4.Text += s; };
 			manager.OnChnage += onChange;
 			if (File.Exists("settings.data"))
 			{
@@ -165,11 +165,11 @@ namespace LabDataHelper
 				var v = s.AsSpan(pos + 5);
 				int end = v.findFirstChar(';');
 				string ss = v.Slice(0, end).ToString();
-				var cv = managerM.Scan(ss);
+				var cv = managerM.Run(ss);
 				converter = d => cv.getValue(d);
 
 			}
-		
+
 		}
 		void updateSetInfo()
 		{
@@ -194,12 +194,12 @@ namespace LabDataHelper
 				if (converter != null && unit != null)
 				{
 
-					sb.AppendLine("平均值:" + set.getMean(converter) + unit + " 极限偏差:" + (set.getMax(converter) - set.getMax(converter)) + unit);
+					sb.AppendLine("数据:"+set.Count+" 平均值:" + set.getMean(converter) + unit + " 极限偏差:" + (converter(set.Max-set.Min)) + unit);
 				}
 				else
 				{
 
-					sb.AppendLine("平均值:" + set.Mean + " 极限偏差:" + (set.Max - set.Min));
+					sb.AppendLine("数据:" + set.Count + " 平均值:" + set.Mean + " 极限偏差:" + (set.Max - set.Min));
 				}
 				richTextBox3.Text = sb.ToString();
 				richTextBox3.Select(richTextBox3.Text.Length - 1, 0);
@@ -223,7 +223,7 @@ namespace LabDataHelper
 			if (comboBox1.SelectedItem is DataSet)
 			{
 
-				manager.addValue(comboBox1.SelectedIndex, managerM.Scan(textBox2.Text).getValue(1));
+				manager.addValue(comboBox1.SelectedIndex, managerM.Run(textBox2.Text).getValue(1));
 				textBox2.Text = "";
 				textBox2.Focus();
 
@@ -283,7 +283,7 @@ namespace LabDataHelper
 			}
 			manager.save("data\\" + manager.name + ".data");
 			readDescribe(manager.describe);
-			settings.lastName= manager.name;
+			settings.lastName = manager.name;
 			settings.save("settings.data");
 		}
 
@@ -321,15 +321,15 @@ namespace LabDataHelper
 			}
 		}
 
-	
+
 		private void button9_Click_1(object sender, EventArgs e)
 		{
 
-			managerM.Add(textBox2.Text);
-				textBox2.Text = "";
-				textBox2.Focus();
+			managerM.Run(textBox2.Text);
+			textBox2.Text = "";
+			textBox2.Focus();
 
-			
+
 		}
 	}
 }

@@ -19,6 +19,11 @@ namespace LabDataHelper
 		{
 			InitializeComponent();
 			this.dataManager = manager;
+			if(dataManager!=null&&dataManager.Count>0 )
+
+			{
+				richTextBox1.Text = dataManager[dataManager.Count-1].describe;
+			}
 		}
 
 		private void button1_Click(object sender, EventArgs e)
