@@ -41,6 +41,12 @@ namespace LabDataHelper
 					}
 				};
 		}
+
+		void addVisualFx()
+		{
+		//	foreach(var v in contr)
+		}
+
 		void updateFiles()
 		{
 			string path = "data";
@@ -280,6 +286,10 @@ namespace LabDataHelper
 				richTextBox3.Select(richTextBox3.Text.Length - 1, 0);
 				richTextBox3.ScrollToCaret();
 			}
+			else
+			{
+
+			}
 		}
 		private void button2_Click(object sender, EventArgs e)
 		{
@@ -421,21 +431,27 @@ namespace LabDataHelper
 				index = manager.addNewData("16½øÖÆ", "");
 			}
 			int max = (int)numericUpDown1.Value;
+			int offset = (int)numericUpDown2.Value; 
 			int j = 0;
-			foreach (Int16 i in is16)
+			for(int i=0;i<max;i++)
 			{
-				manager.addValue(index, i);
-				j++;
-				if(j == max)
+				j = offset + i;
+				if(j<is16.Length)
 				{
-					break;
+                  manager.addValue(index, is16[j]);
 				}
 			}
+		
 		}
 
 		private void richTextBox4_TextChanged(object sender, EventArgs e)
 		{
 
+
+		}
+
+		private void label5_Click(object sender, EventArgs e)
+		{
 
 		}
 	}
