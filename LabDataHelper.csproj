@@ -12,6 +12,9 @@
     <Reference Include="DVLib">
       <HintPath>..\DVLib\DVLib\bin\Release\net6.0\DVLib.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel">
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft Office\root\Office16\ADDINS\PowerPivot Excel Add-inv16\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

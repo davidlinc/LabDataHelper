@@ -90,6 +90,7 @@
 			Controls.Add(textBox1);
 			Name = "Form2";
 			Text = "添加数据组";
+			Load += Form2_Load;
 			ResumeLayout(false);
 			PerformLayout();
 		}
