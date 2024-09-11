@@ -1,5 +1,6 @@
 using DVLib.LabDataHelper;
 using DVOSLib;
+using MathBase;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,7 +12,9 @@ namespace LabDataHelper
 		DataManager manager = new DataManager("数据");
 		MathObjectManager managerM = new MathObjectManager();
 		DataConverter converter;
+		DataConverter refConverter;
 		Helper helper;
+		double maxRef = double.PositiveInfinity;
 
 		DataSet baseSet
 		{
@@ -45,7 +48,7 @@ namespace LabDataHelper
 				}
 			};
 
-		
+
 			helper = new Helper(manager);
 			saveFileDialog1.FileOk += (o, e) =>
 			{
@@ -84,7 +87,8 @@ namespace LabDataHelper
 			)
 		{
 
-			managerM.regiseterMethod("setText", (a, b) => {
+			managerM.regiseterMethod("setText", (a, b) =>
+			{
 				if (b != null && b.Length > 0)
 				{
 					richTextBox4.Text = b[0].Item1;
@@ -317,6 +321,28 @@ namespace LabDataHelper
 				converter = d => cv.getValue(d);
 
 			}
+			p = s.findString("dataRef=");
+			if (p.Count > 0)
+			{
+				int pos = p.First();
+				var v = s.AsSpan(pos + 8);
+				int end = v.findFirstChar(';');
+				string ss = v.Slice(0, end).ToString();
+				var cv = managerM.Run(ss);
+				refConverter = d => cv.getValue(d);
+
+			}
+			p = s.findString("maxRef=");
+			if (p.Count > 0)
+			{
+				int pos = p.First();
+				var v = s.AsSpan(pos + 7);
+				int end = v.findFirstChar(';');
+				string ss = v.Slice(0, end).ToString();
+				var cv = managerM.Run(ss);
+				maxRef = cv.getValue(d);
+
+			}
 
 		}
 
@@ -342,11 +368,14 @@ namespace LabDataHelper
 			if (comboBox1.SelectedItem is DataSet)
 			{
 				DataSet set = (DataSet)comboBox1.SelectedItem;
+				int index = comboBox1.SelectedIndex;
 				StringBuilder sb = new StringBuilder();
 				List<int> greenPos = new List<int>();
 				List<int> greenLength = new List<int>();
 				List<int> bluePos = new List<int>();
 				List<int> blueLength = new List<int>();
+				List<int> redPos = new List<int>();
+				List<int> redLength = new List<int>();
 				int line = 0;
 				for (int i = 0; i < set.Count; i++)
 				{
@@ -356,12 +385,58 @@ namespace LabDataHelper
 				}
 				sb.AppendLine("[" + set.name + "]" + " [数据长度:(" + set.Count + ")] [平均值:(" + set.getMean(converter) + unit + ")] [极限偏差:(" + (converter(set.Max - set.Min)) + unit + ")]");
 				line++;
+				if(index>0)
+				{
+					double dy = converter(set.Mean - manager[index - 1].Mean);
+					sb.AppendLine("[变化:(" + dy+ unit + ")]");
+					line++;
+
+				}
 				if (baseSet != null)
 				{
+
 					var s = baseSet;
 					sb.AppendLine("[" + s.name + "]" + " [数据长度:(" + s.Count + ")] [平均值:(" + s.getMean(converter) + unit + ")] [极限偏差:(" + (converter(s.Max - s.Min)) + unit + ")]");
 					line++;
 					sb.AppendLine("[比较]" + " [平均值变化:(" + converter(set.Mean - s.Mean) + unit + ")] [极限偏差变化:(" + (converter(set.Max - set.Min - s.Max + s.Min)) + unit + ")]");
+					line++;
+
+				}
+
+				if (checkBox2.Checked && manager.Count > 0)
+				{
+					DataConverter rc = d => d;
+					if (refConverter != null)
+					{
+						rc = refConverter;
+					}
+					double[] rdata = manager.getDataFromMean(index + 1, converter);
+					double[] refdata = manager.getRefData(manager.getDataFromDescribe(index + 1, refConverter), rdata[0]);
+					//r2
+					double refd = refdata[index].keep(2);
+					double readd = rdata[index].keep(2);
+					double r2 = DataManager.CalculateRSquared(refdata, rdata);
+					sb.AppendLine("[参考]" + "[参考值为: " + refd + unit + "] [测量值为:" + readd + unit + "] ");
+					line++;
+					if (Math.Abs(refd - readd) <maxRef)
+					{
+						addWithColor("[相差:" + (refd - readd).keep(2) + unit + "] ", sb, greenPos, greenLength, line);
+					}
+					else
+					{
+
+						addWithColor("[相差:" + (refd - readd).keep(2) + unit + "] ", sb, redPos, redLength, line);
+					}
+					if (r2 >= (double)numericUpDown4.Value)
+					{
+						addWithColor("[R2:" + r2 + "]", sb, greenPos, greenLength, line);
+					}
+					else
+					{
+
+						addWithColor("[R2:" + r2 + "]", sb, redPos, redLength, line);
+					}
+
 					line++;
 				}
 
@@ -378,6 +453,12 @@ namespace LabDataHelper
 					richTextBox3.SelectionStart = greenPos[i];
 					richTextBox3.SelectionLength = greenLength[i];
 					richTextBox3.SelectionColor = Color.Green;
+				}
+				for (int i = 0; i < redLength.Count; i++)
+				{
+					richTextBox3.SelectionStart = redPos[i];
+					richTextBox3.SelectionLength = redLength[i];
+					richTextBox3.SelectionColor = Color.Red;
 				}
 				richTextBox3.Select(richTextBox3.Text.Length - 1, 0);
 				richTextBox3.ScrollToCaret();
@@ -460,7 +541,7 @@ namespace LabDataHelper
 			converter = null;
 			unit = null;
 			managerM.clear();
-			
+
 			if (!Directory.Exists("data"))
 			{
 				Directory.CreateDirectory("data");
@@ -475,7 +556,7 @@ namespace LabDataHelper
 		private void button6_Click(object sender, EventArgs e)
 		{
 			lastSelectDataset = -1;
-		
+
 			if (File.Exists("data\\" + manager.name + ".data"))
 			{
 				manager.load("data\\" + manager.name + ".data");
@@ -483,7 +564,7 @@ namespace LabDataHelper
 				richTextBox1.Text = manager.describe;
 				converter = null;
 				unit = null;
-				managerM.clear();	
+				managerM.clear();
 				registerFunc();
 				readDescribe(manager.describe);
 			}
@@ -582,7 +663,7 @@ namespace LabDataHelper
 				double maxV = manager[index].Max;
 				for (int t = 0; t < manager[index].Count; t++)
 				{
-					if (manager[index][t] == minV )
+					if (manager[index][t] == minV)
 					{
 						manager.removeValue(index, t);
 						break;
@@ -590,7 +671,7 @@ namespace LabDataHelper
 				}
 				for (int t = 0; t < manager[index].Count; t++)
 				{
-					if (manager[index][t] == maxV )
+					if (manager[index][t] == maxV)
 					{
 						manager.removeValue(index, t);
 						break;
@@ -616,7 +697,7 @@ namespace LabDataHelper
 			DialogResult r = saveFileDialog1.ShowDialog();
 			if (r == DialogResult.OK)
 			{
-				helper.saveExcel(fsNmae, 2, 2, converter, unit, baseSet != null ? comboBox4.SelectedIndex : -1);
+				helper.saveExcel(fsNmae, 2, 2, converter, unit, refConverter);
 
 			}
 
@@ -665,36 +746,21 @@ namespace LabDataHelper
 
 		private void button12_Click(object sender, EventArgs e)
 		{
-			Process.Start("shutdown", "/s /t 0");
-			double[] angle0 = new double[manager.Count];
-			double[] angle1 = new double[manager.Count];
-			string x = "x=[";
-			string y = "y=[";
-			double x0 = 0;
-			double y0;
-			for (int i = 1; i < manager.Count; i++)
-			{
-				angle0[i] = double.Parse(manager[i].describe.ToString()) * 1000 * 8 - double.Parse(manager[i - 1].describe.ToString()) * 1000 * 8;
-
-
-				angle1[i] = Math.Abs(converter(manager[i].Mean - manager[i - 1].Mean) - angle0[i]) / angle0[i];
-
-				if (i == manager.Count - 1)
-				{
-					x += angle0[i] + "]";
-					y += angle1[i] + "]";
-				}
-				else
-				{
-					x += angle0[i] + ",";
-					y += angle1[i] + ",";
-				}
-			}
-
-			richTextBox3.Text = x + "\n" + y;
+			comboBox4.SelectedItem = null;
+			comboBox4.Text = "";
 		}
 
 		private void richTextBox3_TextChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void checkBox2_CheckedChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void numericUpDown4_ValueChanged(object sender, EventArgs e)
 		{
 
 		}

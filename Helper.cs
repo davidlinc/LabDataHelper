@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DVLib.LabDataHelper;
 using DVOSLib;
+using MathBase;
 using Microsoft.Office.Interop.Excel;
 using App = Microsoft.Office.Interop.Excel.Application;
 
@@ -31,7 +32,7 @@ namespace LabDataHelper
 			this.dataManager = dataManager;
 		}
 
-		public void saveExcel(string path,int x,int y,DataConverter converter=null,string unit=null,int baseIndex=-1)
+		public void saveExcel(string path, int x, int y, DataConverter converter = null, string unit = null, DataConverter refConverter=null)
 		{
 			if(converter==null)
 			{
@@ -65,24 +66,31 @@ namespace LabDataHelper
 			xpos = x;
 			ypos = maxY;
 			worksheet.Cells[maxY, xpos] = "平均数";
-			worksheet.Cells[maxY+1, xpos] = "最大偏差";
-			DataSet baseData=null;
-			if(baseIndex>-1)
+			if(refConverter!=null)
 			{
 
-				worksheet.Cells[maxY + 2, xpos] = "与基准偏差";
-				baseData = dataManager[baseIndex];
+				worksheet.Cells[maxY+1, xpos] = "参考值";
+				worksheet.Cells[maxY + 2, xpos] = "相差";
+				worksheet.Cells[maxY + 3, xpos] = "R2";
 			}
 			xpos++;
+			int index = 0;
 			foreach (var v in dataManager)
 			{
 				worksheet.Cells[ypos, xpos] = converter(v.Mean);
-				worksheet.Cells[ypos+1, xpos] = converter(v.Max-v.Min);
-				if(baseData!=null)
-				{ 
-					worksheet.Cells[ypos + 2, xpos] = converter(v.Mean-baseData.Mean);
-				}
+				
+				double[] rdata = dataManager.getDataFromMean(index + 1, converter);
+				double[] refdata = dataManager.getRefData(dataManager.getDataFromDescribe(index + 1, refConverter), rdata[0]);
+				//r2
+				double refd = refdata[index].keep(2);
+				double readd = rdata[index].keep(2);
+				double r2 = DataManager.CalculateRSquared(refdata, rdata);
+				worksheet.Cells[ypos+1, xpos] = refd;
+
+				worksheet.Cells[ypos + 2, xpos] = readd-refd;
+				worksheet.Cells[ypos + 3, xpos] = r2;
 				xpos++;
+				index++;
 			}
 
 				wb.SaveAs(path);

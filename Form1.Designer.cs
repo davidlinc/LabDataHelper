@@ -65,9 +65,13 @@
 			button12 = new Button();
 			numericUpDown3 = new NumericUpDown();
 			label9 = new Label();
+			checkBox2 = new CheckBox();
+			numericUpDown4 = new NumericUpDown();
+			label10 = new Label();
 			((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown2).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown3).BeginInit();
+			((System.ComponentModel.ISupportInitialize)numericUpDown4).BeginInit();
 			SuspendLayout();
 			// 
 			// richTextBox1
@@ -122,11 +126,11 @@
 			// 
 			// richTextBox3
 			// 
-			richTextBox3.Location = new Point(894, 100);
+			richTextBox3.Location = new Point(891, 102);
 			richTextBox3.Margin = new Padding(4);
 			richTextBox3.Name = "richTextBox3";
 			richTextBox3.ReadOnly = true;
-			richTextBox3.Size = new Size(928, 288);
+			richTextBox3.Size = new Size(928, 644);
 			richTextBox3.TabIndex = 7;
 			richTextBox3.Text = "";
 			richTextBox3.TextChanged += richTextBox3_TextChanged;
@@ -276,7 +280,7 @@
 			numericUpDown1.Name = "numericUpDown1";
 			numericUpDown1.Size = new Size(104, 38);
 			numericUpDown1.TabIndex = 23;
-			numericUpDown1.Value = new decimal(new int[] { 100, 0, 0, 0 });
+			numericUpDown1.Value = new decimal(new int[] { 15, 0, 0, 0 });
 			// 
 			// label5
 			// 
@@ -342,7 +346,7 @@
 			// label7
 			// 
 			label7.AutoSize = true;
-			label7.Location = new Point(906, 438);
+			label7.Location = new Point(891, 778);
 			label7.Margin = new Padding(4, 0, 4, 0);
 			label7.Name = "label7";
 			label7.Size = new Size(38, 31);
@@ -351,7 +355,7 @@
 			// 
 			// button4
 			// 
-			button4.Location = new Point(1108, 487);
+			button4.Location = new Point(1093, 827);
 			button4.Margin = new Padding(4);
 			button4.Name = "button4";
 			button4.Size = new Size(146, 46);
@@ -363,7 +367,7 @@
 			// comboBox2
 			// 
 			comboBox2.FormattingEnabled = true;
-			comboBox2.Location = new Point(952, 438);
+			comboBox2.Location = new Point(937, 778);
 			comboBox2.Margin = new Padding(4);
 			comboBox2.Name = "comboBox2";
 			comboBox2.Size = new Size(304, 39);
@@ -371,7 +375,7 @@
 			// 
 			// button2
 			// 
-			button2.Location = new Point(952, 487);
+			button2.Location = new Point(937, 827);
 			button2.Margin = new Padding(4);
 			button2.Name = "button2";
 			button2.Size = new Size(146, 46);
@@ -429,7 +433,6 @@
 			numericUpDown3.Name = "numericUpDown3";
 			numericUpDown3.Size = new Size(104, 38);
 			numericUpDown3.TabIndex = 41;
-			numericUpDown3.Value = new decimal(new int[] { 3, 0, 0, 0 });
 			// 
 			// label9
 			// 
@@ -441,11 +444,47 @@
 			label9.TabIndex = 42;
 			label9.Text = "优化";
 			// 
+			// checkBox2
+			// 
+			checkBox2.AutoSize = true;
+			checkBox2.Checked = true;
+			checkBox2.CheckState = CheckState.Checked;
+			checkBox2.Location = new Point(389, 248);
+			checkBox2.Name = "checkBox2";
+			checkBox2.Size = new Size(94, 66);
+			checkBox2.TabIndex = 43;
+			checkBox2.Text = "作为\r\n参考";
+			checkBox2.UseVisualStyleBackColor = true;
+			checkBox2.CheckedChanged += checkBox2_CheckedChanged;
+			// 
+			// numericUpDown4
+			// 
+			numericUpDown4.DecimalPlaces = 3;
+			numericUpDown4.Increment = new decimal(new int[] { 1, 0, 0, 196608 });
+			numericUpDown4.Location = new Point(389, 188);
+			numericUpDown4.Name = "numericUpDown4";
+			numericUpDown4.Size = new Size(104, 38);
+			numericUpDown4.TabIndex = 44;
+			numericUpDown4.Value = new decimal(new int[] { 999, 0, 0, 196608 });
+			numericUpDown4.ValueChanged += numericUpDown4_ValueChanged;
+			// 
+			// label10
+			// 
+			label10.AutoSize = true;
+			label10.Location = new Point(389, 154);
+			label10.Name = "label10";
+			label10.Size = new Size(92, 31);
+			label10.TabIndex = 45;
+			label10.Text = "R2阈值";
+			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(14F, 31F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(1889, 912);
+			Controls.Add(label10);
+			Controls.Add(numericUpDown4);
+			Controls.Add(checkBox2);
 			Controls.Add(label9);
 			Controls.Add(numericUpDown3);
 			Controls.Add(button12);
@@ -489,6 +528,7 @@
 			((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown2).EndInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown3).EndInit();
+			((System.ComponentModel.ISupportInitialize)numericUpDown4).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -531,5 +571,8 @@
 		private Button button12;
 		private NumericUpDown numericUpDown3;
 		private Label label9;
+		private CheckBox checkBox2;
+		private NumericUpDown numericUpDown4;
+		private Label label10;
 	}
 }
