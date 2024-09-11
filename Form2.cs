@@ -35,10 +35,10 @@ namespace LabDataHelper
 					textBox1.Text = dataManager[dataManager.Count - 1].name.Replace(num.ToString(),(num+d).ToString());
 				}
 				}
-			
 			}
 		}
 
+		
 		int getNum(string s)
 		{
 			List<char> list = new List<char>();
