@@ -44,6 +44,8 @@ namespace LabDataHelper
 					comboBox1.SelectedIndex = lastSelectDataset;
 				}
 			};
+
+		
 			helper = new Helper(manager);
 			saveFileDialog1.FileOk += (o, e) =>
 			{
@@ -78,7 +80,21 @@ namespace LabDataHelper
 				};
 		}
 
+		void registerFunc(
+			)
+		{
 
+			managerM.regiseterMethod("setText", (a, b) => {
+				if (b != null && b.Length > 0)
+				{
+					richTextBox4.Text = b[0].Item1;
+					return (null, (data) => 1);
+				}
+				return (null, (data) => 0);
+
+
+			});
+		}
 		void addVisualFx()
 		{
 			//	foreach(var v in contr)
@@ -284,7 +300,7 @@ namespace LabDataHelper
 				string[] strings = runs.Split(';', StringSplitOptions.RemoveEmptyEntries);
 				foreach (var vvv in strings)
 				{
-					managerM.Add(vvv);
+					managerM.Run(vvv).getValue();
 				}
 			}
 			p = s.findString("data=");
@@ -444,11 +460,13 @@ namespace LabDataHelper
 			converter = null;
 			unit = null;
 			managerM.clear();
+			
 			if (!Directory.Exists("data"))
 			{
 				Directory.CreateDirectory("data");
 			}
 			manager.save("data\\" + manager.name + ".data");
+			registerFunc();
 			readDescribe(manager.describe);
 			settings.lastName = manager.name;
 			settings.save("settings.data");
@@ -457,6 +475,7 @@ namespace LabDataHelper
 		private void button6_Click(object sender, EventArgs e)
 		{
 			lastSelectDataset = -1;
+		
 			if (File.Exists("data\\" + manager.name + ".data"))
 			{
 				manager.load("data\\" + manager.name + ".data");
@@ -464,7 +483,8 @@ namespace LabDataHelper
 				richTextBox1.Text = manager.describe;
 				converter = null;
 				unit = null;
-				managerM.clear();
+				managerM.clear();	
+				registerFunc();
 				readDescribe(manager.describe);
 			}
 
@@ -494,7 +514,7 @@ namespace LabDataHelper
 
 		private void button9_Click_1(object sender, EventArgs e)
 		{
-			managerM.Run(textBox2.Text);
+			managerM.Run(textBox2.Text).getValue();
 			textBox2.Text = "";
 			textBox2.Focus();
 		}
