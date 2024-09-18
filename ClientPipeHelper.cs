@@ -11,7 +11,7 @@ namespace LabDataHelper
 	{
 		Stop,Move,MoveTo,Update
 	}
-	public class PipeHelper
+	public class ClientPipeHelper
 	{
 		string name;
 		int bufferSizeSend = 9;
@@ -21,11 +21,11 @@ namespace LabDataHelper
 
 		Action<Action<byte[]>> operator0;
 		bool run = false;
-		public PipeHelper(string name)
+		public ClientPipeHelper(string name)
 		{
 			this.name = name;
 		}
-		public PipeHelper setBufferSize(int Send,int Receive)
+		public ClientPipeHelper setBufferSize(int Send,int Receive)
 		{
 			this.bufferSizeSend = Send;
 			this.bufferSizeReceive = Receive;
