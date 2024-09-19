@@ -3,6 +3,7 @@ using DVOSLib;
 using MathBase;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -16,6 +17,7 @@ namespace LabDataHelper
 		DataConverter refConverter;
 		Helper helper;
 		LevelGetter getter = new LevelGetter();
+		ControlHelper controlHelper = new ControlHelper("dvconnect");
 		DoubleStack<string> codeRecord = new();
 		double maxRef = double.PositiveInfinity;
 
@@ -46,6 +48,7 @@ namespace LabDataHelper
 			getter.register('}', -1);
 			getter.register('[', 1);
 			getter.register(']', -1);
+			controlHelper.onPositionChanged += d => { richTextBox4.Text = d.ToString(); };
 			comboBox1.KeyDown += (o, e) =>
 			{
 
@@ -113,20 +116,20 @@ namespace LabDataHelper
 				{
 					string s = b[0].Item1;
 					var v = managerM.Run(b[0].Item1);
-					double d =v .getValue(2);
-					if(!double.IsNaN(d))
+					double d = v.getValue(2);
+					if (!double.IsNaN(d))
 					{
 						s = d.ToString();
 					}
-					if(v is RuntimeMathObject)
+					if (v is RuntimeMathObject)
 					{
-					 var ss=v.AsRuntime().valueOut;
-						if(ss!=null)
+						var ss = v.AsRuntime().valueOut;
+						if (ss != null)
 						{
-							s= ss.ToString();
+							s = ss.ToString();
 						}
 					}
-					richTextBox4.Text +=s+"\n";
+					richTextBox4.Text += s + "\n";
 					return (s, (data) => 1);
 				}
 				return (null, (data) => 0);
@@ -322,7 +325,7 @@ namespace LabDataHelper
 		void readDescribe(string s)
 		{
 
-			s = s.Replace(" ","").Replace("\n", "");
+			s = s.Replace(" ", "").Replace("\n", "");
 
 			var p = s.findString("unit=");
 			if (p.Count > 0)
@@ -338,10 +341,10 @@ namespace LabDataHelper
 			{
 				int pos = p.First();
 				var v = s.AsSpan(pos + 3);
-				int end = v.findEnd('{','}');
+				int end = v.findEnd('{', '}');
 				string runs = v.Slice(1, end).ToString();
-				
-				string[] strings = runs.cutZeroLevel(';',getter);
+
+				string[] strings = runs.cutZeroLevel(';', getter);
 				foreach (var vvv in strings)
 				{
 					managerM.Run(vvv).getValue();
@@ -421,10 +424,10 @@ namespace LabDataHelper
 				}
 				sb.AppendLine("[" + set.name + "]" + " [数据长度:(" + set.Count + ")] [平均值:(" + set.getMean(converter) + unit + ")] [极限偏差:(" + (converter(set.Max - set.Min)) + unit + ")]");
 				line++;
-				if(index>0)
+				if (index > 0)
 				{
 					double dy = converter(set.Mean - manager[index - 1].Mean);
-					sb.AppendLine("[变化:(" + dy+ unit + ")]");
+					sb.AppendLine("[变化:(" + dy + unit + ")]");
 					line++;
 
 				}
@@ -454,7 +457,7 @@ namespace LabDataHelper
 					double r2 = DataManager.CalculateRSquared(refdata, rdata);
 					sb.AppendLine("[参考]" + "[参考值为: " + refd + unit + "] [测量值为:" + readd + unit + "] ");
 					line++;
-					if (Math.Abs(refd - readd) <maxRef)
+					if (Math.Abs(refd - readd) < maxRef)
 					{
 						addWithColor("[相差:" + (refd - readd).keep(2) + unit + "] ", sb, greenPos, greenLength, line);
 					}
@@ -521,7 +524,7 @@ namespace LabDataHelper
 			if (comboBox1.SelectedItem is DataSet)
 			{
 
-				manager.addValue(comboBox1.SelectedIndex, managerM.Run(textBox2.Text).getValue(1,2,3));
+				manager.addValue(comboBox1.SelectedIndex, managerM.Run(textBox2.Text).getValue(1, 2, 3));
 				codeInput();
 				textBox2.Focus();
 
@@ -627,16 +630,16 @@ namespace LabDataHelper
 			comboBox1.SelectedItem = null;
 			lastSelectDataset = -1;
 		}
-		
+
 		void codeInput()
 		{
-			if(textBox2.Text!=null&&textBox2.Text.Length>0)
+			if (textBox2.Text != null && textBox2.Text.Length > 0)
 			{
 				codeRecord.add(textBox2.Text);
 				textBox2.Text = "";
 			}
-			
-			
+
+
 		}
 
 		void nextCode()
@@ -649,7 +652,7 @@ namespace LabDataHelper
 		}
 		private void button9_Click_1(object sender, EventArgs e)
 		{
-			managerM.Run(textBox2.Text).getValue(1,2,3);
+			managerM.Run(textBox2.Text).getValue(1, 2, 3);
 			codeInput();
 			textBox2.Focus();
 		}
@@ -817,6 +820,16 @@ namespace LabDataHelper
 		private void numericUpDown4_ValueChanged(object sender, EventArgs e)
 		{
 
+		}
+		private void button13_Click(object sender, EventArgs e)
+		{
+			controlHelper.strat();
+
+		}
+
+		private void button14_Click(object sender, EventArgs e)
+		{
+			controlHelper.Move(0.1);
 		}
 	}
 }

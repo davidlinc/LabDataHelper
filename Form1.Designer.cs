@@ -68,6 +68,8 @@
 			checkBox2 = new CheckBox();
 			numericUpDown4 = new NumericUpDown();
 			label10 = new Label();
+			button13 = new Button();
+			button14 = new Button();
 			((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown2).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown3).BeginInit();
@@ -477,11 +479,35 @@
 			label10.TabIndex = 45;
 			label10.Text = "R2阈值";
 			// 
+			// button13
+			// 
+			button13.Location = new Point(244, 821);
+			button13.Margin = new Padding(4);
+			button13.Name = "button13";
+			button13.Size = new Size(153, 46);
+			button13.TabIndex = 46;
+			button13.Text = "连接位移台";
+			button13.UseVisualStyleBackColor = true;
+			button13.Click += button13_Click;
+			// 
+			// button14
+			// 
+			button14.Location = new Point(406, 821);
+			button14.Margin = new Padding(4);
+			button14.Name = "button14";
+			button14.Size = new Size(153, 46);
+			button14.TabIndex = 47;
+			button14.Text = "右";
+			button14.UseVisualStyleBackColor = true;
+			button14.Click += button14_Click;
+			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(14F, 31F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(1889, 912);
+			Controls.Add(button14);
+			Controls.Add(button13);
 			Controls.Add(label10);
 			Controls.Add(numericUpDown4);
 			Controls.Add(checkBox2);
@@ -574,5 +600,7 @@
 		private CheckBox checkBox2;
 		private NumericUpDown numericUpDown4;
 		private Label label10;
+		private Button button13;
+		private Button button14;
 	}
 }
