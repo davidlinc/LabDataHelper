@@ -18,6 +18,7 @@ namespace LabDataHelper
 		int bufferSizeReceive = 1024;
 		public event Action<byte[]> beforeSend;
 		public event Action<byte[]> onReceive;
+		public bool connected {  get;private set; }
 
 		Action<Action<byte[]>> operator0;
 		bool run = false;
@@ -55,6 +56,7 @@ namespace LabDataHelper
 					using(NamedPipeClientStream ncs=new NamedPipeClientStream(name))
 					{
 						ncs.Connect();
+						connected = true;
 						while(run)
 						{
 							lock(send)
@@ -64,7 +66,6 @@ namespace LabDataHelper
 							ncs.Write(send);
 							send[0] = 0;
 							}
-							
 							ncs.Read(receive,0,receive.Length);
 							onReceive(receive);
 						}
@@ -72,7 +73,7 @@ namespace LabDataHelper
 				}
 				catch (Exception e)
 				{
-
+					connected = false;
 				}
 
 			});

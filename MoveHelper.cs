@@ -13,7 +13,7 @@ namespace LabDataHelper
 		public MoveHelper(string name) : base(name)
 		{
 			beforeSend += d => { if (d[0] == 0) { d[0] = (byte)InfoType.Update; }; };
-			onReceive += d => { position = BitConverter.ToDouble(d, 1);onPositionChanged(position); };
+			onReceive += d => { position = BitConverter.ToDouble(d, 0);onPositionChanged(position); };
 
 		}
 
