@@ -16,9 +16,11 @@ namespace LabDataHelper
 		DataConverter refConverter;
 		Helper helper;
 		MoveHelper move = new MoveHelper("dvconnect");
+		AngleDataHelper angleData = new AngleDataHelper("lzzconnect");
 		LevelGetter getter = new LevelGetter();
 		DoubleStack<string> codeRecord = new();
 		double maxRef = double.PositiveInfinity;
+		AngleControl angleControl;
 
 		DataSet baseSet
 		{
@@ -41,6 +43,11 @@ namespace LabDataHelper
 		public Form1()
 		{
 			InitializeComponent();
+			angleControl = new AngleControl(angleData, move);
+			angleData.onDataUpdate += onDataUpdate;
+			angleData.onFail += e => label13.Text = "»ñÈ¡Ê§°Ü";
+			angleData.onError += e => label13.Text =e.StackTrace+" "+ e.Message;
+			angleData.info += s => label13.Text = s;
 			getter.register('(', 1);
 			getter.register(')', -1);
 			getter.register('{', 1);
@@ -136,6 +143,32 @@ namespace LabDataHelper
 			{
 
 				return (this.Text, d => 0);
+			});
+
+			managerM.regiseterMethod("Move", (a, b) =>
+			{
+				move.move(a.Run(b[0].Item1).getValue());
+				return (null, d => d[0]);
+			});
+			
+			managerM.regiseterMethod("MoveTo", (a, b) =>
+			{
+				move.moveTo(a.Run(b[0].Item1).getValue());
+
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("MAR", (a, b) =>
+			{
+				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
+				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(),(int) managerM.Run(b[1].Item1).getValue(),manager);
+
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("FindZero", (a, b) =>
+			{
+				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
+				angleControl.findZero((int)a.Run(b[0].Item1).getValue());
+				return (null, d => d[0]);
 			});
 		}
 		void addVisualFx()
@@ -416,7 +449,9 @@ namespace LabDataHelper
 				int line = 0;
 				for (int i = 0; i < set.Count; i++)
 				{
-					addWithColor(set[i].ToString(), sb, bluePos, blueLength, line);
+					//addWithColor(set[i].ToString(), sb, bluePos, blueLength, line);
+
+					sb.Append(set[i].ToString());
 					sb.AppendLine(" " + set[i, converter].ToString() + unit);
 					line++;
 				}
@@ -828,7 +863,35 @@ namespace LabDataHelper
 
 		private void label11_Click(object sender, EventArgs e)
 		{
+			//move.move(1);
+		}
 
+		public void onDataUpdate(short[] d)
+		{
+			var m = managerM.Run(textBox1.Text);
+			double sum = 0;
+			int n = 0;
+			for (int i = 0; i < d.Length; i++)
+			{
+				if (m.getValue(i) > 0)
+				{
+					sum += Math.Atan(d[i] / 65535.0 / 30) * 1000000;
+					n++;
+				}
+			}
+			sum /= n;
+			label12.Text = sum.keep(2).ToString();
+		}
+		private void button14_Click(object sender, EventArgs e)
+		{
+
+
+			angleData.start();
+		}
+
+		private void label12_Click(object sender, EventArgs e)
+		{
+			angleData.update();
 		}
 	}
 }
