@@ -21,11 +21,13 @@ namespace LabDataHelper
 		public event Action<byte[]> beforeSend = (d)=> { };
 		public event Action<byte[]> onReceive = (d) => { };
 
+		volatile byte[] send;
+		volatile byte[] receive;
 		public event Action<Exception> onError;
 		public bool connected {  get;private set; }
 
 		Action<Action<byte[]>> operator0;
-		bool run = false;
+		volatile bool run = false;
 		NamedPipeClientStream n;
 		public ClientPipeHelper(string name)
 		{
@@ -62,8 +64,8 @@ namespace LabDataHelper
 			run = true;
 			Task.Run(() =>
 			{
-				byte[] send = new byte[bufferSizeSend];
-				byte[] receive = new byte[bufferSizeReceive];
+				 send = new byte[bufferSizeSend];
+				 receive = new byte[bufferSizeReceive];
 				operator0 = a => { lock (send) { a(send);
 						info("set:" + send[0]);
 					} };

@@ -13,16 +13,16 @@ namespace LabDataHelper
 		AngleDataHelper angle;
 		MoveHelper move;
 		double f = 500;
-		public double angleRealtime { get; private set; }
-		bool stable = false;
-		Queue<double> posQueue=new Queue<double>();
+		 public double angleRealtime { get; private set; }
+		volatile bool stable = false;
+		volatile Queue<double> posQueue=new Queue<double>();
 		public double posRealtime { get; private set; }
 		public double refAngle { get; private set; }
-		bool changed = false;
+		volatile bool changed = false;
 		public double refPos { get; private set; } = 15;
 
 		public double refAngleRealtime { get { return Math.Atan((posRealtime - refPos + refAngle) / f); } }
-		int max = 10;
+		int max = 8;
 		SourceOperator selectIndex=d=> { return d[0]; };
 		Action<double> onAngleUpdate;
 		Action<AngleDataHelper> onError;
@@ -81,23 +81,25 @@ namespace LabDataHelper
 				posQueue.Dequeue();
 			}
 			posQueue.Enqueue(a);
-            
+
+				bool ts;
 				if(posQueue.Count==max&&changed)
 				{
-					stable = true;
+					ts = true;
 				}else
 				{
-					stable = false;
+					ts = false;
 				}
             foreach (var item in posQueue)
             {
                 if(item!=a)
 				{
-					stable = false;
+					ts = false;
 						changed = true; 
 						break;
 				}
             }
+				stable = ts;
 			}
 		
         }
@@ -124,7 +126,6 @@ namespace LabDataHelper
 			stable = false;
 			while (!stable)
 			{
-				Thread.Sleep(10);
 			}
 		}
 
@@ -157,13 +158,13 @@ namespace LabDataHelper
 						{
 						}
 					}
-					stop = false;
+					Volatile.Write(ref stop, false);
 				};
-				onError = s => stop = false;
+				onError = s =>
+					Volatile.Write(ref stop, false); ;
 				angle.update();
-				while (stop)
+				while (Volatile.Read(ref stop))
 				{
-					Thread.Sleep(5);
 				}
 				name++;
 				for (int i = 0; i < times; i++)
@@ -187,14 +188,15 @@ namespace LabDataHelper
 
 							}
 						}
-						stop = false;
+						Volatile.Write(ref stop, false);
 					};
-					onError = s => stop = false;
+					onError = s =>
+					Volatile.Write(ref stop, false); ;
 					angle.update();
-					stop = true;
-					while (stop)
+
+					Volatile.Write(ref stop, true);
+					while (Volatile.Read(ref stop))
 					{
-						Thread.Sleep(5);
 					}
 
 
@@ -213,14 +215,16 @@ namespace LabDataHelper
 				angle.update();
 				bool waitF = true;
 
-				onAngleUpdate = d => { waitF = false;
+				onAngleUpdate = d => {
+					Volatile.Write(ref waitF, false); ;
 				};
 
-				onError = d => { waitF = false;
+				onError = d => {
+					Volatile.Write(ref waitF, false);
 				};
-				while (waitF) { Thread.Sleep(5); };
+				while (Volatile.Read(ref waitF)) {  };
 
-				if ( Math.Abs(angleRealtime) < 50&&dir*lastMove>0)
+				if ( Math.Abs(angleRealtime) < 28&&dir*lastMove>0)
 				{ 
 					if(Math.Abs(posRealtime - 14.8) < 0.1 )
 					{
@@ -266,7 +270,6 @@ namespace LabDataHelper
 				}
 				if(Math.Abs(angleRealtime)<200)
 				{
-
 					Move(-angleRealtime / 36000);
 				}
 				else

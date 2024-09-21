@@ -44,6 +44,7 @@ namespace LabDataHelper
 		{
 			InitializeComponent();
 			angleControl = new AngleControl(angleData, move);
+			registerFunc();
 			angleData.onDataUpdate += onDataUpdate;
 			angleData.onFail += e => label13.Text = "»ñÈ¡Ê§°Ü";
 			angleData.onError += e => label13.Text =e.StackTrace+" "+ e.Message;
