@@ -14,7 +14,7 @@ namespace LabDataHelper
 		{
 			beforeSend += d => { if (d[0] == 0) { d[0] = (byte)InfoType.Update; }; };
 			onReceive += d => { position = BitConverter.ToDouble(d, 0);onPositionChanged(position);
-				Thread.Sleep(80);
+				Thread.Sleep(100);
 			};
 
 		}

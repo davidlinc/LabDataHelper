@@ -160,18 +160,33 @@ namespace LabDataHelper
 			});
 			managerM.regiseterMethod("MAR", (a, b) =>
 			{
+				
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
-				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(),(int) managerM.Run(b[1].Item1).getValue(),manager);
-
+				//DataManager nm = new DataManager(manager.name, manager.describe);
+				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(),manager);
+		
+				
 				return (null, d => d[0]);
 			});
-			managerM.regiseterMethod("FindZero", (a, b) =>
+			managerM.regiseterMethod("Peak", (a, b) =>
 			{
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
-				angleControl.findZero((int)a.Run(b[0].Item1).getValue());
+				double error = 2;
+				if(b.Length>=2)
+                {
+					error = a.Run(b[1].Item1).getValue();
+
+				}
+
+				angleControl.Peak(a.Run(b[0].Item1).getValue(),error);
 				return (null, d => d[0]);
 			});
 		}
+
+		void setM(DataManager m)
+        {
+			this.manager = m;
+        }
 		void addVisualFx()
 		{
 			//	foreach(var v in contr)

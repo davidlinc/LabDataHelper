@@ -130,8 +130,9 @@ namespace LabDataHelper
 		}
 
 
-		public  void moveAndRecordRaw(double dx,int times,DataManager ma)
+		public  void moveAndRecordRaw(double dx,int times, DataManager ma)
 		{
+
 
 			Task.Run(() =>
 			{
@@ -141,13 +142,14 @@ namespace LabDataHelper
 				index = ma.addNewData(name.ToString(), posRealtime.ToString());
 
 
+
 				onAngleUpdate = (s) =>
 				{
 					lock (rawData)
 					{
-						for(int j=0;j<rawData.Length;j++)
+						for (int j = 0; j < rawData.Length; j++)
 						{
-							if(selectIndex(j)>0)
+							if (selectIndex(j) > 0)
 							{
 
 								ma.addValue(index, rawData[j], false);
@@ -201,10 +203,11 @@ namespace LabDataHelper
 
 
 				}
+
 			});
 		}
 
-		public void findZero(int dir,int maxTry = 100)
+		public void Peak(double dir,double error=2,int maxTry = 100)
 		{
 			if(maxTry<=0)return;
 			if(dir==0)
@@ -224,9 +227,9 @@ namespace LabDataHelper
 				};
 				while (Volatile.Read(ref waitF)) {  };
 
-				if ( Math.Abs(angleRealtime) < 28&&dir*lastMove>0)
+				if ( Math.Abs(Math.Abs(angleRealtime)-Math.Abs(dir)) < error&&dir*lastMove>0)
 				{ 
-					if(Math.Abs(posRealtime - 14.8) < 0.1 )
+					if(Math.Abs(posRealtime - 14.8) < 1 )
 					{
 					
 						 if(angleRealtime * dir > 0)
@@ -238,9 +241,9 @@ namespace LabDataHelper
 						 else
 						{
 
-							Move(-angleRealtime / 6000);
+							Move((dir-angleRealtime )/ 12000);
 							wait();
-							findZero(dir, maxTry - 1);
+							Peak(dir,error, maxTry - 1);
 							return;
 						}
 
@@ -249,7 +252,7 @@ namespace LabDataHelper
 					
 			    }
 
-				if (angleRealtime*dir>0||angleRealtime * lastMove > 0|| Math.Abs(posRealtime - 14.785) > 0.9)
+				if ((angleRealtime-dir)*dir>0|| (angleRealtime - dir) * lastMove > 0|| Math.Abs(posRealtime - 14.785) > 0.9)
 				{
 					if(dir>0)
 					{
@@ -265,20 +268,29 @@ namespace LabDataHelper
 						Move(-0.001);
 					}
 					wait();
-					findZero(dir,maxTry - 1);
+					Peak(dir,error,maxTry - 1);
 					return;
 				}
-				if(Math.Abs(angleRealtime)<200)
+				if(Math.Abs(angleRealtime-dir)<200)
 				{
-					Move(-angleRealtime / 36000);
+					if(dir<100)
+                    {
+
+					Move((-dir-angleRealtime )/ 36000);
+                    }
+					else
+                    {
+
+					Move((dir - angleRealtime) / 36000);
+					}
 				}
 				else
 				{
 
-					Move(-angleRealtime / 16000);
+					Move((dir-angleRealtime) / 16000);
 				}
 				wait();
-				findZero(dir,maxTry - 1);
+				Peak(dir,error, maxTry - 1);
 			});
 
 			
