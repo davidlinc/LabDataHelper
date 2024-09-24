@@ -207,7 +207,7 @@ namespace LabDataHelper
 			});
 		}
 
-		public void Peak(double dir,double error=2,int maxTry = 100)
+		public void Peak(double dir,double error=2,int maxTry = 100,bool setRef=false)
 		{
 			if(maxTry<=0)return;
 			if(dir==0)
@@ -234,8 +234,12 @@ namespace LabDataHelper
 					
 						 if(angleRealtime * dir > 0)
 						{
+							if(setRef)
+							{
+
                          refPos = posRealtime;
 					     refAngle = Math.Tan(angleRealtime/1000000)*f;
+							}
 						return;
 						}
 						 else
@@ -252,12 +256,12 @@ namespace LabDataHelper
 					
 			    }
 
-				if ((angleRealtime-dir)*dir>0|| (angleRealtime - dir) * lastMove > 0|| Math.Abs(posRealtime - 14.785) > 0.9)
+				if ((angleRealtime-dir)*dir>0|| (angleRealtime - dir) * lastMove > 0|| Math.Abs(posRealtime - 14.8) > 1.2)
 				{
 					if(dir>0)
 					{
 						
-						MoveTo(14);
+						MoveTo(13.6);
 						wait();
 						Move(0.001);
 					}
@@ -273,7 +277,7 @@ namespace LabDataHelper
 				}
 				if(Math.Abs(angleRealtime-dir)<200)
 				{
-					if(dir<100)
+					if(Math.Abs(dir)<100&&dir*angleRealtime<0)
                     {
 
 					Move((-dir-angleRealtime )/ 36000);

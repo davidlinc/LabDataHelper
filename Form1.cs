@@ -168,6 +168,14 @@ namespace LabDataHelper
 				
 				return (null, d => d[0]);
 			});
+			managerM.regiseterMethod("Delete", (a, b) =>
+			{
+
+				int s = (int)(managerM.Run(b[0].Item1).getValue());
+				int c = (int)(managerM.Run(b[1].Item1).getValue());
+			manager.delete(s, c);
+				return (null, d => d[0]);
+			});
 			managerM.regiseterMethod("Peak", (a, b) =>
 			{
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
