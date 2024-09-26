@@ -1,6 +1,7 @@
 using DVLib.LabDataHelper;
 using DVOSLib;
 using MathBase;
+using System;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Runtime.InteropServices;
@@ -15,6 +16,7 @@ namespace LabDataHelper
 		DataConverter converter;
 		DataConverter refConverter;
 		Helper helper;
+		LinearMap map=new LinearMap(8);
 		MoveHelper move = new MoveHelper("dvconnect");
 		AngleDataHelper angleData = new AngleDataHelper("lzzconnect");
 		LevelGetter getter = new LevelGetter();
@@ -168,7 +170,26 @@ namespace LabDataHelper
 				
 				return (null, d => d[0]);
 			});
-			managerM.regiseterMethod("Delete", (a, b) =>
+
+			managerM.registerFunc("Lmap", map);
+
+            managerM.regiseterMethod("slowMAR", (a, b) =>
+            {
+
+                angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
+				//DataManager nm = new DataManager(manager.name, manager.describe);
+				int mt = 10;
+				if(b.Length>2)
+				{
+					mt = (int)managerM.Run(b[2].Item1).getValue();
+
+                }
+                angleControl.slowMAR(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager,mt);
+
+
+                return (null, d => d[0]);
+            });
+            managerM.regiseterMethod("Delete", (a, b) =>
 			{
 
 				int s = (int)(managerM.Run(b[0].Item1).getValue());
@@ -176,7 +197,29 @@ namespace LabDataHelper
 			manager.delete(s, c);
 				return (null, d => d[0]);
 			});
-			managerM.regiseterMethod("Peak", (a, b) =>
+            managerM.regiseterMethod("LmapClear", (a, b) =>
+            {
+
+                map.Clear();
+                return (null, d => d[0]);
+            });
+            managerM.regiseterMethod("LmapAdd", (a, b) =>
+            {
+                DataConverter rc = d => d;
+                if (refConverter != null)
+                {
+                    rc = refConverter;
+                }
+                map.Clear();
+                double[] rdata = manager.getDataFromMean(manager.Count, converter);
+                double[] refdata =manager.getRefData( manager.getDataFromDescribe(manager.Count,rc), rdata[0]);
+				for(int i = 0; i < rdata.Length; i++)
+				{
+					map.Add((manager[i].Mean,refdata[i]));
+				}
+                return (null, d => d[0]);
+            });
+            managerM.regiseterMethod("Peak", (a, b) =>
 			{
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				double error = 2;
@@ -507,9 +550,9 @@ namespace LabDataHelper
 						rc = refConverter;
 					}
 					double[] rdata = manager.getDataFromMean(index + 1, converter);
-					double[] refdata = manager.getRefData(manager.getDataFromDescribe(index + 1, refConverter), rdata[0]);
-					//r2
-					double refd = refdata[index].keep(2);
+                    double[] refdata = manager.getRefData(manager.getDataFromDescribe(manager.Count, rc), rdata[0]);
+                    //r2
+                    double refd = refdata[index].keep(2);
 					double readd = rdata[index].keep(2);
 					double r2 = DataManager.CalculateRSquared(refdata, rdata);
 					sb.AppendLine("[参考]" + "[参考值为: " + refd + unit + "] [测量值为:" + readd + unit + "] ");

@@ -1,8 +1,10 @@
 ﻿using DVLib.LabDataHelper;
 using DVOSLib;
+using MathBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,7 +21,22 @@ namespace LabDataHelper
 		public double posRealtime { get; private set; }
 		public double refAngle { get; private set; }
 		volatile bool changed = false;
-		public double refPos { get; private set; } = 15;
+        volatile byte[] zeroPos_=new byte[8] ;
+		volatile bool isRunning=false;
+        double zeroPos { get { return MemoryMarshal.Cast<byte, double>(zeroPos_)[0]; }
+
+			set { var rd = new Span<byte>(zeroPos_);
+
+				unsafe
+				{
+					byte* b =(byte*) (&value);
+					Span<byte> ptr = new Span<byte>(b, 8);
+					ptr.CopyTo(rd);
+				}
+			}
+		
+		}
+        public double refPos { get; private set; } = 15;
 
 		public double refAngleRealtime { get { return Math.Atan((posRealtime - refPos + refAngle) / f); } }
 		int max = 8;
@@ -129,23 +146,87 @@ namespace LabDataHelper
 			}
 		}
 
+		public void slowMAR(double dx, int times, DataManager ma, int maxPerTime = 10)
+		{
+			Task.Run(() =>
+			{
+				int loop = times / maxPerTime;
+				int rest = times - loop* maxPerTime+1;
+				double ddx = dx * loop;
+				double p0= angleRealtime;
+                double pos = angleRealtime;
+				int last = loop - 1;
+				for (int i = 0; i < loop; i++)
+				{
 
-		public  void moveAndRecordRaw(double dx,int times, DataManager ma)
+                    Peak(p0);
+                    waitRunning();
+					if(i!=0)
+					{
+						setZero(ma);
+					}
+                    Peak(pos);
+					waitRunning();
+					moveAndRecordRaw(ddx, maxPerTime-1, ma, false,i==0);
+					waitRunning();
+					if(i==last)
+					{
+
+                        moveAndRecordRaw(dx, rest, ma, i>0, i == 0);
+						waitRunning();
+                    }
+					pos += dx/0.001*8;
+				}
+				ma.orderByDescribe();
+			});
+		}
+		public void setZero(DataManager ma)
 		{
 
+            isRunning = true;
+			Task.Run(() =>
+			{
+				int index;
+			
+				onAngleUpdate = (s) =>
+				{
+						zeroPos = posRealtime - angleRealtime / 8 * 0.001;
+                    isRunning = false;
+                }; 
+				onError = (s) =>
+                {
+                    isRunning = false;
+                };
+                angle.update();
+            });
+            }
+		public void waitRunning()
+		{
+			while (isRunning) ;
+		}
+		public void moveAndRecordRaw(double dx, int times, DataManager ma, bool deleteFirst = false, bool resetZero=true)
+		{
 
+				isRunning = true;
 			Task.Run(() =>
 			{
 				int name = 0;
 				int index;
 				bool stop = true;
-				index = ma.addNewData(name.ToString(), posRealtime.ToString());
+
+              int first=  index = ma.addNewData(name.ToString(), posRealtime.ToString());
 
 
 
 				onAngleUpdate = (s) =>
 				{
-					lock (rawData)
+                    if (resetZero)
+                    {
+
+                        zeroPos = posRealtime - angleRealtime / 8 * 0.001;
+                    }
+                    ma.changeDescribe(index, (double.Parse(ma[index].describe) - zeroPos).ToString());
+                    lock (rawData)
 					{
 						for (int j = 0; j < rawData.Length; j++)
 						{
@@ -174,7 +255,7 @@ namespace LabDataHelper
 
 					Move(dx);
 					wait();
-					index = ma.addNewData(name.ToString(), posRealtime.ToString());
+					index = ma.addNewData(name.ToString(),( posRealtime-zeroPos).ToString());
 					name++;
 					onAngleUpdate = (s) =>
 					{
@@ -202,24 +283,34 @@ namespace LabDataHelper
 					}
 
 
+				}	if(deleteFirst)
+				{
+					ma.removeDate(first);
 				}
-
+				isRunning = false;
+			
 			});
 		}
 
 		public void Peak(double dir,double error=2,int maxTry = 100,bool setRef=false)
 		{
-			if(maxTry<=0)return;
-			if(dir==0)
+			isRunning = true;
+			if (maxTry <= 0)
+			{
+				isRunning=false;
+				return;
+			}
+				if (dir==0)
 			{
 				dir = 1;
 			}
 			Task.Run(() => {
 				angle.update();
 				bool waitF = true;
-
+				double refPos=0;
 				onAngleUpdate = d => {
-					Volatile.Write(ref waitF, false); ;
+					Volatile.Write(ref waitF, false); 
+			
 				};
 
 				onError = d => {
@@ -240,6 +331,7 @@ namespace LabDataHelper
                          refPos = posRealtime;
 					     refAngle = Math.Tan(angleRealtime/1000000)*f;
 							}
+							isRunning = false;
 						return;
 						}
 						 else
@@ -248,7 +340,7 @@ namespace LabDataHelper
 							Move((dir-angleRealtime )/ 12000);
 							wait();
 							Peak(dir,error, maxTry - 1);
-							return;
+                            return;
 						}
 
 
@@ -273,7 +365,7 @@ namespace LabDataHelper
 					}
 					wait();
 					Peak(dir,error,maxTry - 1);
-					return;
+                    return;
 				}
 				if(Math.Abs(angleRealtime-dir)<200)
 				{
@@ -295,9 +387,10 @@ namespace LabDataHelper
 				}
 				wait();
 				Peak(dir,error, maxTry - 1);
-			});
+            });
 
 			
+                
 		}
 
 		
