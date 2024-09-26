@@ -80,7 +80,7 @@ namespace LabDataHelper
 				worksheet.Cells[ypos, xpos] = converter(v.Mean);
 				
 				double[] rdata = dataManager.getDataFromMean(index + 1, converter);
-				double[] refdata = dataManager.getRefData(dataManager.getDataFromDescribe(index + 1, refConverter), rdata[0]);
+				double[] refdata = dataManager.getDataFromDescribe(index + 1, refConverter);
 				//r2
 				double refd = refdata[index].keep(2);
 				double readd = rdata[index].keep(2);

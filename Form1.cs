@@ -1,6 +1,8 @@
 using DVLib.LabDataHelper;
 using DVOSLib;
+using Images;
 using MathBase;
+using System;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Runtime.InteropServices;
@@ -15,6 +17,7 @@ namespace LabDataHelper
 		DataConverter converter;
 		DataConverter refConverter;
 		Helper helper;
+		LinearMap map=new LinearMap(8);
 		MoveHelper move = new MoveHelper("dvconnect");
 		AngleDataHelper angleData = new AngleDataHelper("lzzconnect");
 		LevelGetter getter = new LevelGetter();
@@ -168,12 +171,84 @@ namespace LabDataHelper
 				
 				return (null, d => d[0]);
 			});
-			managerM.regiseterMethod("Delete", (a, b) =>
+
+			managerM.registerFunc("Lmap", map);
+
+            managerM.regiseterMethod("slowMAR", (a, b) =>
+            {
+
+                angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
+				//DataManager nm = new DataManager(manager.name, manager.describe);
+				int mt = 10;
+				if(b.Length>2)
+				{
+					mt = (int)managerM.Run(b[2].Item1).getValue();
+
+                }
+                angleControl.slowMAR(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager,mt);
+
+
+                return (null, d => d[0]);
+            });
+            managerM.regiseterMethod("Delete", (a, b) =>
 			{
 
 				int s = (int)(managerM.Run(b[0].Item1).getValue());
 				int c = (int)(managerM.Run(b[1].Item1).getValue());
 			manager.delete(s, c);
+				return (null, d => d[0]);
+			});
+            managerM.regiseterMethod("LmapClear", (a, b) =>
+            {
+
+                map.Clear();
+                return (null, d => d[0]);
+            });
+            managerM.regiseterMethod("LmapAdd", (a, b) =>
+            {
+                DataConverter rc = d => d;
+                if (refConverter != null)
+                {
+                    rc = refConverter;
+                }
+                double[] rdata = manager.getDataFromMean(manager.Count, converter);
+                double[] refdata =manager.getDataFromDescribe(manager.Count,rc);
+				for(int i = 0; i < rdata.Length; i++)
+				{
+					map.Add((manager[i].Mean,refdata[i]));
+				}
+                return (null, d => d[0]);
+            }); 
+
+			/*
+			managerM.regiseterMethod("Merge", (a, b) =>
+			{
+				try
+				{
+					string path = "data\\" + b[0].Item1 + ".data";
+					if(File.Exists(path))
+					{
+						manager.Merge(path);
+					}
+				}
+				catch
+				{
+
+				}
+				return (null, d => d[0]);
+			}); 
+			*/
+			
+			managerM.regiseterMethod("Rename", (a, b) =>
+			{
+				try
+				{
+					manager.orderByDescribe();
+				}
+				catch
+				{
+
+				}
 				return (null, d => d[0]);
 			});
 			managerM.regiseterMethod("Peak", (a, b) =>
@@ -507,9 +582,9 @@ namespace LabDataHelper
 						rc = refConverter;
 					}
 					double[] rdata = manager.getDataFromMean(index + 1, converter);
-					double[] refdata = manager.getRefData(manager.getDataFromDescribe(index + 1, refConverter), rdata[0]);
-					//r2
-					double refd = refdata[index].keep(2);
+                    double[] refdata =manager.getDataFromDescribe(manager.Count, rc);
+                    //r2
+                    double refd = refdata[index].keep(2);
 					double readd = rdata[index].keep(2);
 					double r2 = DataManager.CalculateRSquared(refdata, rdata);
 					sb.AppendLine("[参考]" + "[参考值为: " + refd + unit + "] [测量值为:" + readd + unit + "] ");
@@ -858,10 +933,14 @@ namespace LabDataHelper
 
 		}
 
-		private void button12_Click(object sender, EventArgs e)
+		private unsafe void button12_Click(object sender, EventArgs e)
 		{
-			comboBox4.SelectedItem = null;
-			comboBox4.Text = "";
+
+			Array2<int> array2 =new Array2<int>(100,100);
+			PixelMap pm=new PixelMap(array2);
+			array2[0, 0] = Colors.Blue;
+			pm[0, 0]->Blue = 100;
+			DVOS.writeLine(pm[0,0]->Blue);
 		}
 
 		private void richTextBox3_TextChanged(object sender, EventArgs e)
