@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LabDataHelper": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

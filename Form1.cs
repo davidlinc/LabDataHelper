@@ -5,11 +5,21 @@ using MathBase;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+using System.Runtime.CompilerServices;
+using Complex = MathBase.Complex;
 
 namespace LabDataHelper
 {
+	public class InvokeFrom:Attribute
+	{
+
+	}
+
 	public partial class Form1 : Form
 	{
 		DataManager manager = new DataManager("数据");
@@ -17,7 +27,7 @@ namespace LabDataHelper
 		DataConverter converter;
 		DataConverter refConverter;
 		Helper helper;
-		LinearMap map=new LinearMap(8);
+		LinearMap map = new LinearMap(8);
 		MoveHelper move = new MoveHelper("dvconnect");
 		AngleDataHelper angleData = new AngleDataHelper("lzzconnect");
 		LevelGetter getter = new LevelGetter();
@@ -48,16 +58,24 @@ namespace LabDataHelper
 			InitializeComponent();
 			angleControl = new AngleControl(angleData, move);
 			registerFunc();
-			angleData.onDataUpdate += onDataUpdate;
-			angleData.onFail += e => label13.Text = "获取失败";
-			angleData.onError += e => label13.Text =e.StackTrace+" "+ e.Message;
-			angleData.info += s => label13.Text = s;
+			angleData.onDataUpdate +=  onDataUpdate;
+			angleData.onFail += e => this.Invoke(() => { label13.Text = "获取失败"; });
+			angleData.onError += e => this.Invoke(() =>
+			{
+				label13.Text = e.StackTrace + " " + e.Message;
+			});
+			angleData.info += s => this.Invoke(() =>
+			{
+				label13.Text = s;
+			});
 			getter.register('(', 1);
 			getter.register(')', -1);
 			getter.register('{', 1);
 			getter.register('}', -1);
 			getter.register('[', 1);
 			getter.register(']', -1);
+
+			FFTHelper.setPreLength(20);
 			comboBox1.KeyDown += (o, e) =>
 			{
 
@@ -84,14 +102,16 @@ namespace LabDataHelper
 			helper = new Helper(manager);
 			saveFileDialog1.FileOk += (o, e) =>
 			{
-
-				string s = saveFileDialog1.FileName;
-				fsNmae = s;
+				this.Invoke(() =>
+				{
+					string s = saveFileDialog1.FileName;
+					fsNmae = s;
+				});
 
 			};
 			comboBox3.TextChanged += nameChanged;
 			comboBox3.Leave += (o, e) => { updateFiles(); };
-			DVOS.stringWriter = (s) => { richTextBox4.Text += s; };
+			DVOS.stringWriter = (s) => { this.Invoke(delegate { richTextBox4.Text += s; }); };
 			manager.OnChnage += onChange;
 			if (File.Exists("settings.data"))
 			{
@@ -154,7 +174,7 @@ namespace LabDataHelper
 				move.move(a.Run(b[0].Item1).getValue());
 				return (null, d => d[0]);
 			});
-			
+
 			managerM.regiseterMethod("MoveTo", (a, b) =>
 			{
 				move.moveTo(a.Run(b[0].Item1).getValue());
@@ -163,62 +183,71 @@ namespace LabDataHelper
 			});
 			managerM.regiseterMethod("MAR", (a, b) =>
 			{
-				
+
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				//DataManager nm = new DataManager(manager.name, manager.describe);
-				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(),manager);
-		
-				
+				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager);
+
+
 				return (null, d => d[0]);
 			});
 
 			managerM.registerFunc("Lmap", map);
 
-            managerM.regiseterMethod("slowMAR", (a, b) =>
-            {
+			managerM.regiseterMethod("slowMAR", (a, b) =>
+			{
 
-                angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
+				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				//DataManager nm = new DataManager(manager.name, manager.describe);
 				int mt = 10;
-				if(b.Length>2)
+				if (b.Length > 2)
 				{
 					mt = (int)managerM.Run(b[2].Item1).getValue();
 
-                }
-                angleControl.slowMAR(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager,mt);
+				}
+				angleControl.slowMAR(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager, mt);
 
 
-                return (null, d => d[0]);
-            });
-            managerM.regiseterMethod("Delete", (a, b) =>
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("Delete", (a, b) =>
 			{
 
 				int s = (int)(managerM.Run(b[0].Item1).getValue());
 				int c = (int)(managerM.Run(b[1].Item1).getValue());
-			manager.delete(s, c);
+				manager.delete(s, c);
 				return (null, d => d[0]);
 			});
-            managerM.regiseterMethod("LmapClear", (a, b) =>
-            {
-
-                map.Clear();
-                return (null, d => d[0]);
-            });
-            managerM.regiseterMethod("LmapAdd", (a, b) =>
-            {
-                DataConverter rc = d => d;
-                if (refConverter != null)
-                {
-                    rc = refConverter;
-                }
-                double[] rdata = manager.getDataFromMean(manager.Count, converter);
-                double[] refdata =manager.getDataFromDescribe(manager.Count,rc);
-				for(int i = 0; i < rdata.Length; i++)
-				{
-					map.Add((manager[i].Mean,refdata[i]));
+			managerM.regiseterMethod("LmapClear", (a, b) =>
+			{
+				lock(map)
+				{ 
+				map.Clear();
 				}
-                return (null, d => d[0]);
-            }); 
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("LmapAdd", (a, b) =>
+			{
+				lock (map)
+				{
+					lock (manager)
+					{
+						DataConverter rc = d => d;
+
+						if (refConverter != null)
+						{
+							rc = refConverter;
+						}
+						double[] rdata = manager.getDataFromMean(manager.Count, converter);
+						double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
+						for (int i = 0; i < rdata.Length; i++)
+						{
+							map.Add((manager[i].Mean, refdata[i]));
+						}
+					}
+				}
+				return (null, d => d[0]);
+			});
 
 			/*
 			managerM.regiseterMethod("Merge", (a, b) =>
@@ -238,11 +267,12 @@ namespace LabDataHelper
 				return (null, d => d[0]);
 			}); 
 			*/
-			
+
 			managerM.regiseterMethod("Rename", (a, b) =>
 			{
 				try
 				{
+					lock (manager)
 					manager.orderByDescribe();
 				}
 				catch
@@ -255,21 +285,21 @@ namespace LabDataHelper
 			{
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				double error = 2;
-				if(b.Length>=2)
-                {
+				if (b.Length >= 2)
+				{
 					error = a.Run(b[1].Item1).getValue();
 
 				}
 
-				angleControl.Peak(a.Run(b[0].Item1).getValue(),error);
+				angleControl.Peak(a.Run(b[0].Item1).getValue(), error);
 				return (null, d => d[0]);
 			});
 		}
 
 		void setM(DataManager m)
-        {
+		{
 			this.manager = m;
-        }
+		}
 		void addVisualFx()
 		{
 			//	foreach(var v in contr)
@@ -350,17 +380,23 @@ namespace LabDataHelper
 		}
 		void nameChanged(object sender, EventArgs e)
 		{
+			lock(manager)
+			{
+
 			manager.name = comboBox3.Text;
+			}
 		}
 		void updateInfo()
 		{
-
+			
 			comboBox3.Text = manager.name;
 			richTextBox1.Text = manager.describe;
 
 		}
 		void updateSelect1()
 		{
+			
+
 			object s1 = comboBox1.SelectedItem;
 			if (s1 is DataSet)
 			{
@@ -371,32 +407,45 @@ namespace LabDataHelper
 			{
 				richTextBox2.Text = "";
 			}
+
+		
 		}
+
+		/// <summary>
+		/// 外部调用
+		/// </summary>
+		/// <param name="dataSet"></param>
+		/// <param name="type"></param>
 		void onChange(DataSet dataSet, EventType type)
 		{
-			switch (type)
+			this.Invoke(() =>
 			{
-				case EventType.NewSet:
-				case EventType.RemoveSet:
-					comboBox1.Text = "";
-					updateCombo1();
-					comboBox1.SelectedIndex = comboBox1.Items.Count - 1;
-					updateSelect1();
-					lastSelect = -1;
-					break;
-				case EventType.ChangeName:
-				case EventType.ChangeText:
-					break;
-				case EventType.NewValue:
-				case EventType.ChangeValue:
-				case EventType.RemoveValue:
-					lastSelect = -1;
-					updateCombo2();
-					comboBox2.SelectedItem = null;
-					comboBox2.Text = "";
-					updateSetInfo(converter, unit);
-					break;
-			}
+
+				switch (type)
+				{
+					case EventType.NewSet:
+					case EventType.RemoveSet:
+						comboBox1.Text = "";
+						updateCombo1();
+						comboBox1.SelectedIndex = comboBox1.Items.Count - 1;
+						updateSelect1();
+						lastSelect = -1;
+						break;
+					case EventType.ChangeName:
+					case EventType.ChangeText:
+						break;
+					case EventType.NewValue:
+					case EventType.ChangeValue:
+					case EventType.RemoveValue:
+						lastSelect = -1;
+						updateCombo2();
+						comboBox2.SelectedItem = null;
+						comboBox2.Text = "";
+						updateSetInfo(converter, unit);
+						break;
+				}
+
+			});
 		}
 		public void updateCombo1()
 		{
@@ -582,9 +631,9 @@ namespace LabDataHelper
 						rc = refConverter;
 					}
 					double[] rdata = manager.getDataFromMean(index + 1, converter);
-                    double[] refdata =manager.getDataFromDescribe(manager.Count, rc);
-                    //r2
-                    double refd = refdata[index].keep(2);
+					double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
+					//r2
+					double refd = refdata[index].keep(2);
 					double readd = rdata[index].keep(2);
 					double r2 = DataManager.CalculateRSquared(refdata, rdata);
 					sb.AppendLine("[参考]" + "[参考值为: " + refd + unit + "] [测量值为:" + readd + unit + "] ");
@@ -933,14 +982,73 @@ namespace LabDataHelper
 
 		}
 
+		[DllImport("DVCPP.dll")]
+		public static unsafe extern double* _complexMul(double* a, double* b, int doubleSize);
+
+
+		double m1 = 0;
+		double m2 = 0;
+	
 		private unsafe void button12_Click(object sender, EventArgs e)
 		{
 
-			Array2<int> array2 =new Array2<int>(100,100);
-			PixelMap pm=new PixelMap(array2);
-			array2[0, 0] = Colors.Blue;
-			pm[0, 0]->Blue = 100;
-			DVOS.writeLine(pm[0,0]->Blue);
+			//var r=GaussQuadrature.integrate(GaussQuadrature.findPoints2(15), x => x * x, -1, 1);
+			//	DVOS.writeLine(r);
+
+			int n = 60000000;
+			MathBase.Complex[] d = new MathBase.Complex[n];
+			MathBase.Complex[] d2 = new MathBase.Complex[n];	
+			MathBase.Complex[] r = new MathBase.Complex[n];
+		MathBase.Complex[] r2 = new MathBase.Complex[n];
+			double[] ad = new double[n];
+			double[] rd1, rd2;
+			double s1, s2;
+			MathBase.Complex c = 1;
+
+			MathBase.Complex c2 = 1;
+			var rd = new Random();
+			for (int i = 0; i < n; i++)
+			{
+				d[i] = new MathBase.Complex(rd.NextDouble(), rd.NextDouble());
+				ad[i] = i;
+				d2[i] = new MathBase.Complex(rd.NextDouble(), rd.NextDouble());
+			}
+			var v = new Stopwatch();
+			v.Start();
+			//s1 = Helper.muldouble2(ad);
+
+			r = Helper.mul2(d, d2);
+			v.Stop();
+			m1 += v.ElapsedMilliseconds;
+			DVOS.writeLine(v.ElapsedMilliseconds);
+			v.Restart();
+			r2 = Helper.mul3(d, d2);
+			//s2 = Helper.muldouble(ad);
+			//FFTHelper.MultiplyM(ad);
+			v.Stop();
+			DVOS.writeLine(v.ElapsedMilliseconds);
+			m2 += v.ElapsedMilliseconds;
+
+
+			DVOS.writeLine((m1 / m2));
+
+
+			v.Restart();
+			fixed(Complex* cp1=d,cp2=d2)
+			{
+				_complexMul((double*)cp1,(double*) cp2, d.Length * 2);
+			}
+			//s2 = Helper.muldouble(ad);
+			//FFTHelper.MultiplyM(ad);
+			v.Stop();
+			DVOS.writeLine(v.ElapsedMilliseconds);
+
+			Complex[] raw = new MathBase.Complex[] { 1 + Complex.I, 2 };
+
+			//DVOS.writeLine(r[0]);
+			//DVOS.writeLine(r[r.Length - 1]);
+			//DVOS.writeLine((c-c2));
+
 		}
 
 		private void richTextBox3_TextChanged(object sender, EventArgs e)
@@ -961,7 +1069,7 @@ namespace LabDataHelper
 		private void button13_Click(object sender, EventArgs e)
 		{
 			move.start();
-			move.onPositionChanged += d => { label11.Text = d.ToString(); };
+			move.onPositionChanged += d => { this.Invoke(delegate{label11.Text = d.ToString(); }); };
 		}
 
 		private void label11_Click(object sender, EventArgs e)
@@ -971,7 +1079,8 @@ namespace LabDataHelper
 
 		public void onDataUpdate(short[] d)
 		{
-			var m = managerM.Run(textBox1.Text);
+			
+	var m = managerM.Run(textBox1.Text);
 			double sum = 0;
 			int n = 0;
 			for (int i = 0; i < d.Length; i++)
@@ -984,6 +1093,8 @@ namespace LabDataHelper
 			}
 			sum /= n;
 			label12.Text = sum.keep(2).ToString();
+
+		
 		}
 		private void button14_Click(object sender, EventArgs e)
 		{
@@ -995,6 +1106,10 @@ namespace LabDataHelper
 		private void label12_Click(object sender, EventArgs e)
 		{
 			angleData.update();
+		}
+
+		private void button15_Click(object sender, EventArgs e)
+		{
 		}
 	}
 }
