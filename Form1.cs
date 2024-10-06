@@ -5,8 +5,11 @@ using MathBase;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 
 namespace LabDataHelper
 {
@@ -58,6 +61,8 @@ namespace LabDataHelper
 			getter.register('}', -1);
 			getter.register('[', 1);
 			getter.register(']', -1);
+
+			FFTHelper.setPreLength(20);
 			comboBox1.KeyDown += (o, e) =>
 			{
 
@@ -935,12 +940,48 @@ namespace LabDataHelper
 
 		private unsafe void button12_Click(object sender, EventArgs e)
 		{
+			DVOS.writeLine(Avx2.IsSupported);
+			//var r=GaussQuadrature.integrate(GaussQuadrature.findPoints2(15), x => x * x, -1, 1);
+			//	DVOS.writeLine(r);
+				int n =20000000;
+			int n2 = 2;
+			MathBase. Complex[] d = new MathBase.Complex[n];
+			MathBase.Complex[] d2 = new MathBase.Complex[n];
+			MathBase.Complex[] r = new MathBase.Complex[n];
+			MathBase.Complex[] r2 = new MathBase.Complex[n];
+			double[] ad=new double[n];
+			double[] rd1,rd2 ;
+			double s1, s2;
+			MathBase.Complex c = 1;
+		var rd = new Random();
+				for (int i = 0; i < n; i++)
+			{
+				d[i]=i-MathBase.Complex.I*i;
+				ad[i]=i;
+				d2[i] = i - MathBase.Complex.I * i; ;
+			}
+			var v = new Stopwatch();
+			v.Start();
+			for (int j = 0; j < n2; j++)
+				s1 = Helper.muldouble2(ad, ad);
+			//FFTHelper.MultiplyN(ad);
+			v.Stop();
+			DVOS.writeLine(v.ElapsedMilliseconds);
+			v.Restart();
 
-			Array2<int> array2 =new Array2<int>(100,100);
-			PixelMap pm=new PixelMap(array2);
-			array2[0, 0] = Colors.Blue;
-			pm[0, 0]->Blue = 100;
-			DVOS.writeLine(pm[0,0]->Blue);
+			for (int j = 0; j < n2; j++)
+				s2 = Helper.muldouble(ad,ad);
+			//FFTHelper.MultiplyM(ad);
+			v.Stop();
+			DVOS.writeLine(v.ElapsedMilliseconds);
+
+			if(r.Length<10)
+			{
+				DVOS.outPut(r);
+				DVOS.outPut(r2);
+			}
+
+			
 		}
 
 		private void richTextBox3_TextChanged(object sender, EventArgs e)
