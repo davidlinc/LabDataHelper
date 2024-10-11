@@ -12,13 +12,11 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using System.Runtime.CompilerServices;
 using Complex = MathBase.Complex;
+using Vector2 = MathBase.Vector2;
 
 namespace LabDataHelper
 {
-	public class InvokeFrom:Attribute
-	{
 
-	}
 
 	public partial class Form1 : Form
 	{
@@ -27,7 +25,7 @@ namespace LabDataHelper
 		DataConverter converter;
 		DataConverter refConverter;
 		Helper helper;
-		LinearMap map = new LinearMap(8);
+		LerpFunction map = new LerpFunction(8);
 		MoveHelper move = new MoveHelper("dvconnect");
 		AngleDataHelper angleData = new AngleDataHelper("lzzconnect");
 		LevelGetter getter = new LevelGetter();
@@ -58,7 +56,7 @@ namespace LabDataHelper
 			InitializeComponent();
 			angleControl = new AngleControl(angleData, move);
 			registerFunc();
-			angleData.onDataUpdate +=  onDataUpdate;
+			angleData.onDataUpdate += onDataUpdate;
 			angleData.onFail += e => this.Invoke(() => { label13.Text = "»ñÈ¡Ê§°Ü"; });
 			angleData.onError += e => this.Invoke(() =>
 			{
@@ -112,7 +110,6 @@ namespace LabDataHelper
 			comboBox3.TextChanged += nameChanged;
 			comboBox3.Leave += (o, e) => { updateFiles(); };
 			DVOS.stringWriter = (s) => { this.Invoke(delegate { richTextBox4.Text += s; }); };
-			manager.OnChnage += onChange;
 			if (File.Exists("settings.data"))
 			{
 				settings.load("settings.data");
@@ -133,6 +130,31 @@ namespace LabDataHelper
 						catch { }
 					}
 				};
+
+			manager.OnChnage += (d, t) => { this.Invoke(() => { onChange(d, t); }); };
+		}
+
+
+		int getN(int m)
+		{
+			double maxRate = (Math.Max(8.0 / 7, 7.0 / 6) * m);
+
+			if (maxRate == (int)maxRate)
+			{
+				maxRate = (int)maxRate - 1;
+			}
+			else
+			{
+				maxRate = (int)maxRate;
+			}
+
+			double minRate = Math.Min(8.0 / 7, 7.0 / 6) * m;
+
+			if (maxRate > minRate)
+			{
+				return (int)maxRate;
+			}
+			return -1;
 		}
 
 		void registerFunc(
@@ -192,7 +214,6 @@ namespace LabDataHelper
 				return (null, d => d[0]);
 			});
 
-			managerM.registerFunc("Lmap", map);
 
 			managerM.regiseterMethod("slowMAR", (a, b) =>
 			{
@@ -218,15 +239,24 @@ namespace LabDataHelper
 				manager.delete(s, c);
 				return (null, d => d[0]);
 			});
-			managerM.regiseterMethod("LmapClear", (a, b) =>
+			managerM.regiseterMethod("LFClear", (a, b) =>
 			{
-				lock(map)
-				{ 
-				map.Clear();
+				lock (map)
+				{
+					map.Clear();
 				}
 				return (null, d => d[0]);
 			});
-			managerM.regiseterMethod("LmapAdd", (a, b) =>
+			managerM.regiseterMethod("LFDiff", (a, b) =>
+			{
+				lock (map)
+				{
+					map = map.getDerivative();
+					map.Update(8);
+				}
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("LFAddR", (a, b) =>
 			{
 				lock (map)
 				{
@@ -238,17 +268,38 @@ namespace LabDataHelper
 						{
 							rc = refConverter;
 						}
-						double[] rdata = manager.getDataFromMean(manager.Count, converter);
 						double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
-						for (int i = 0; i < rdata.Length; i++)
+						for (int i = 0; i < refdata.Length; i++)
 						{
 							map.Add((manager[i].Mean, refdata[i]));
 						}
+						map.Update(8);
 					}
 				}
 				return (null, d => d[0]);
 			});
+			managerM.regiseterMethod("LFAdd", (a, b) =>
+			{
+				lock (map)
+				{
+					lock (manager)
+					{
+						DataConverter rc = d => d;
 
+						if (refConverter != null)
+						{
+							rc = refConverter;
+						}
+						double[] refdata = manager.getDataFromDescribe(manager.Count, rc,false);
+						for (int i = 0; i < refdata.Length; i++)
+						{
+							map.Add((refdata[i], manager[i].getMin(converter)));
+						}
+						map.Update(8);
+					}
+				}
+				return (null, d => d[0]);
+			});
 			/*
 			managerM.regiseterMethod("Merge", (a, b) =>
 			{
@@ -273,7 +324,7 @@ namespace LabDataHelper
 				try
 				{
 					lock (manager)
-					manager.orderByDescribe();
+						manager.orderByDescribe();
 				}
 				catch
 				{
@@ -380,22 +431,22 @@ namespace LabDataHelper
 		}
 		void nameChanged(object sender, EventArgs e)
 		{
-			lock(manager)
+			lock (manager)
 			{
 
-			manager.name = comboBox3.Text;
+				manager.name = comboBox3.Text;
 			}
 		}
 		void updateInfo()
 		{
-			
+
 			comboBox3.Text = manager.name;
 			richTextBox1.Text = manager.describe;
 
 		}
 		void updateSelect1()
 		{
-			
+
 
 			object s1 = comboBox1.SelectedItem;
 			if (s1 is DataSet)
@@ -408,7 +459,7 @@ namespace LabDataHelper
 				richTextBox2.Text = "";
 			}
 
-		
+
 		}
 
 		/// <summary>
@@ -418,34 +469,32 @@ namespace LabDataHelper
 		/// <param name="type"></param>
 		void onChange(DataSet dataSet, EventType type)
 		{
-			this.Invoke(() =>
+
+			switch (type)
 			{
+				case EventType.NewSet:
+				case EventType.RemoveSet:
+					comboBox1.Text = "";
+					updateCombo1();
+					comboBox1.SelectedIndex = comboBox1.Items.Count - 1;
+					updateSelect1();
+					lastSelect = -1;
+					break;
+				case EventType.ChangeName:
+				case EventType.ChangeText:
+					break;
+				case EventType.NewValue:
+				case EventType.ChangeValue:
+				case EventType.RemoveValue:
+					lastSelect = -1;
+					updateCombo2();
+					comboBox2.SelectedItem = null;
+					comboBox2.Text = "";
+					updateSetInfo(converter, unit);
+					break;
+			}
 
-				switch (type)
-				{
-					case EventType.NewSet:
-					case EventType.RemoveSet:
-						comboBox1.Text = "";
-						updateCombo1();
-						comboBox1.SelectedIndex = comboBox1.Items.Count - 1;
-						updateSelect1();
-						lastSelect = -1;
-						break;
-					case EventType.ChangeName:
-					case EventType.ChangeText:
-						break;
-					case EventType.NewValue:
-					case EventType.ChangeValue:
-					case EventType.RemoveValue:
-						lastSelect = -1;
-						updateCombo2();
-						comboBox2.SelectedItem = null;
-						comboBox2.Text = "";
-						updateSetInfo(converter, unit);
-						break;
-				}
 
-			});
 		}
 		public void updateCombo1()
 		{
@@ -988,10 +1037,12 @@ namespace LabDataHelper
 
 		double m1 = 0;
 		double m2 = 0;
-	
+
 		private unsafe void button12_Click(object sender, EventArgs e)
 		{
 
+			pictureBox1.Image = map.Plot(1920, 1080).get().toBitmap();
+			/*
 			//var r=GaussQuadrature.integrate(GaussQuadrature.findPoints2(15), x => x * x, -1, 1);
 			//	DVOS.writeLine(r);
 
@@ -1048,6 +1099,7 @@ namespace LabDataHelper
 			//DVOS.writeLine(r[0]);
 			//DVOS.writeLine(r[r.Length - 1]);
 			//DVOS.writeLine((c-c2));
+			*/
 
 		}
 
@@ -1069,7 +1121,7 @@ namespace LabDataHelper
 		private void button13_Click(object sender, EventArgs e)
 		{
 			move.start();
-			move.onPositionChanged += d => { this.Invoke(delegate{label11.Text = d.ToString(); }); };
+			move.onPositionChanged += d => { this.Invoke(delegate { label11.Text = d.ToString(); }); };
 		}
 
 		private void label11_Click(object sender, EventArgs e)
@@ -1079,8 +1131,8 @@ namespace LabDataHelper
 
 		public void onDataUpdate(short[] d)
 		{
-			
-	var m = managerM.Run(textBox1.Text);
+
+			var m = managerM.Run(textBox1.Text);
 			double sum = 0;
 			int n = 0;
 			for (int i = 0; i < d.Length; i++)
@@ -1094,7 +1146,7 @@ namespace LabDataHelper
 			sum /= n;
 			label12.Text = sum.keep(2).ToString();
 
-		
+
 		}
 		private void button14_Click(object sender, EventArgs e)
 		{
@@ -1110,6 +1162,31 @@ namespace LabDataHelper
 
 		private void button15_Click(object sender, EventArgs e)
 		{
+			bitmap b = new bitmap(400, 400);
+			b.paint(Colors.Black);
+			
+			
+			FontManager.renderFont.drawString(b, 0, 0, 400, 400, 0, 0, 1, "1", Colors.Blue);
+			var rm = TriangleMap<int>.getTriangleMap(b,TriangleMap<int>.getCheckerByBackground(b,Colors.Black));
+			rm.setMinLevel(1);
+			b.paint(Colors.Black);
+			//b.drawTriangleNew(Colors.Random, new Vector2(0, 0), new Vector2(100, 100), new Vector2(100,0));
+			rm.GetTrangleInfos().render(b,Vector2.Zero,Vector2.One);
+			int c = 0;
+			foreach(var v in rm.values)
+			{
+				c++;
+			}
+
+			DVOS.writeLine(c);
+
+			pictureBox1.Image=b.toBitmap();
+		}
+
+		private void pictureBox1_Click(object sender, EventArgs e)
+		{
+			if(pictureBox1.Image!=null)
+			pictureBox1.Image.Save("test.bmp");
 		}
 	}
 }
