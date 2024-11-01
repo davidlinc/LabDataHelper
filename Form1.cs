@@ -177,7 +177,7 @@ namespace LabDataHelper
 				return (null, d => d[0]);
 			});
 
-			managerM.registerFunc("Lmap", map);
+			managerM.registerMathFunc("Lmap", map,1);
 
             managerM.regiseterMethod("slowMAR", (a, b) =>
             {
@@ -940,48 +940,10 @@ namespace LabDataHelper
 
 		private unsafe void button12_Click(object sender, EventArgs e)
 		{
-			DVOS.writeLine(Avx2.IsSupported);
-			//var r=GaussQuadrature.integrate(GaussQuadrature.findPoints2(15), x => x * x, -1, 1);
-			//	DVOS.writeLine(r);
-				int n =20000000;
-			int n2 = 2;
-			MathBase. Complex[] d = new MathBase.Complex[n];
-			MathBase.Complex[] d2 = new MathBase.Complex[n];
-			MathBase.Complex[] r = new MathBase.Complex[n];
-			MathBase.Complex[] r2 = new MathBase.Complex[n];
-			double[] ad=new double[n];
-			double[] rd1,rd2 ;
-			double s1, s2;
-			MathBase.Complex c = 1;
-		var rd = new Random();
-				for (int i = 0; i < n; i++)
-			{
-				d[i]=i-MathBase.Complex.I*i;
-				ad[i]=i;
-				d2[i] = i - MathBase.Complex.I * i; ;
-			}
-			var v = new Stopwatch();
-			v.Start();
-			for (int j = 0; j < n2; j++)
-				s1 = Helper.muldouble2(ad, ad);
-			//FFTHelper.MultiplyN(ad);
-			v.Stop();
-			DVOS.writeLine(v.ElapsedMilliseconds);
-			v.Restart();
-
-			for (int j = 0; j < n2; j++)
-				s2 = Helper.muldouble(ad,ad);
-			//FFTHelper.MultiplyM(ad);
-			v.Stop();
-			DVOS.writeLine(v.ElapsedMilliseconds);
-
-			if(r.Length<10)
-			{
-				DVOS.outPut(r);
-				DVOS.outPut(r2);
-			}
-
-			
+			managerM.Run("test1(x)=(sin(x)*2-sin(x)+cos(x))");
+			var v=managerM.Run("test1(y)");
+			DVOS.writeLine(v.getDerivative().getValue(1,0));
+			//DVOS.writeLine(managerM.Run("sin(sin(sin(x)))").getDerivative());
 		}
 
 		private void richTextBox3_TextChanged(object sender, EventArgs e)
