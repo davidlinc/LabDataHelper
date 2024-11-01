@@ -39,7 +39,7 @@ namespace LabDataHelper
         public double refPos { get; private set; } = 15;
 
 		public double refAngleRealtime { get { return Math.Atan((posRealtime - refPos + refAngle) / f); } }
-		int max = 8;
+		int max = 2;
 		SourceOperator selectIndex=d=> { return d[0]; };
 		Action<double> onAngleUpdate;
 		Action<AngleDataHelper> onError;
@@ -223,7 +223,7 @@ namespace LabDataHelper
                     if (resetZero)
                     {
 
-                        zeroPos = posRealtime - angleRealtime / 8 * 0.001;
+                        zeroPos = posRealtime + angleRealtime /9.6;
                     }
                     ma.changeDescribe(index, (double.Parse(ma[index].describe) - zeroPos).ToString());
                     lock (rawData)
