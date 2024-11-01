@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
+using Vector2 = MathBase.Vector2;
 
 namespace LabDataHelper
 {
@@ -20,7 +21,7 @@ namespace LabDataHelper
 		DataConverter converter;
 		DataConverter refConverter;
 		Helper helper;
-		LinearMap map=new LinearMap(8);
+		LerpFunction map = new LerpFunction(8);
 		MoveHelper move = new MoveHelper("dvconnect");
 		AngleDataHelper angleData = new AngleDataHelper("lzzconnect");
 		LevelGetter getter = new LevelGetter();
@@ -53,7 +54,7 @@ namespace LabDataHelper
 			registerFunc();
 			angleData.onDataUpdate += onDataUpdate;
 			angleData.onFail += e => label13.Text = "获取失败";
-			angleData.onError += e => label13.Text =e.StackTrace+" "+ e.Message;
+			angleData.onError += e => label13.Text = e.StackTrace + " " + e.Message;
 			angleData.info += s => label13.Text = s;
 			getter.register('(', 1);
 			getter.register(')', -1);
@@ -159,7 +160,7 @@ namespace LabDataHelper
 				move.move(a.Run(b[0].Item1).getValue());
 				return (null, d => d[0]);
 			});
-			
+
 			managerM.regiseterMethod("MoveTo", (a, b) =>
 			{
 				move.moveTo(a.Run(b[0].Item1).getValue());
@@ -168,63 +169,75 @@ namespace LabDataHelper
 			});
 			managerM.regiseterMethod("MAR", (a, b) =>
 			{
-				
+
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				//DataManager nm = new DataManager(manager.name, manager.describe);
-				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(),manager);
-		
-				
+				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager);
+
+
 				return (null, d => d[0]);
 			});
 
-			managerM.registerFunc("Lmap", map);
+			managerM.registerMathFunc("lf", map, 1);
 
-            managerM.regiseterMethod("slowMAR", (a, b) =>
-            {
+			managerM.regiseterMethod("slowMAR", (a, b) =>
+			{
 
-                angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
+				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				//DataManager nm = new DataManager(manager.name, manager.describe);
 				int mt = 10;
-				if(b.Length>2)
+				if (b.Length > 2)
 				{
 					mt = (int)managerM.Run(b[2].Item1).getValue();
 
-                }
-                angleControl.slowMAR(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager,mt);
+				}
+				angleControl.slowMAR(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager, mt);
 
 
-                return (null, d => d[0]);
-            });
-            managerM.regiseterMethod("Delete", (a, b) =>
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("Delete", (a, b) =>
 			{
 
 				int s = (int)(managerM.Run(b[0].Item1).getValue());
 				int c = (int)(managerM.Run(b[1].Item1).getValue());
-			manager.delete(s, c);
+				manager.delete(s, c);
 				return (null, d => d[0]);
 			});
-            managerM.regiseterMethod("LmapClear", (a, b) =>
-            {
+			managerM.regiseterMethod("lfclear", (a, b) =>
+			{
 
-                map.Clear();
-                return (null, d => d[0]);
-            });
-            managerM.regiseterMethod("LmapAdd", (a, b) =>
-            {
-                DataConverter rc = d => d;
-                if (refConverter != null)
-                {
-                    rc = refConverter;
-                }
-                double[] rdata = manager.getDataFromMean(manager.Count, converter);
-                double[] refdata =manager.getDataFromDescribe(manager.Count,rc);
-				for(int i = 0; i < rdata.Length; i++)
+				map.Clear();
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("lfadd", (a, b) =>
+			{
+				DataConverter rc = d => d;
+				if (refConverter != null)
 				{
-					map.Add((manager[i].Mean,refdata[i]));
+					rc = refConverter;
 				}
-                return (null, d => d[0]);
-            }); 
-
+				double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
+				for (int i = 0; i < refdata.Length; i++)
+				{
+					map.Add((refdata[i], manager[i].getMean(converter)));
+				}
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("lfaddr", (a, b) =>
+			{
+				DataConverter rc = d => d;
+				if (refConverter != null)
+				{
+					rc = refConverter;
+				}
+				double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
+				for (int i = 0; i < refdata.Length; i++)
+				{
+					map.Add((manager[i].Mean, refdata[i]));
+				}
+				return (null, d => d[0]);
+			});
 			/*
 			managerM.regiseterMethod("Merge", (a, b) =>
 			{
@@ -243,7 +256,7 @@ namespace LabDataHelper
 				return (null, d => d[0]);
 			}); 
 			*/
-			
+
 			managerM.regiseterMethod("Rename", (a, b) =>
 			{
 				try
@@ -260,21 +273,21 @@ namespace LabDataHelper
 			{
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				double error = 2;
-				if(b.Length>=2)
-                {
+				if (b.Length >= 2)
+				{
 					error = a.Run(b[1].Item1).getValue();
 
 				}
 
-				angleControl.Peak(a.Run(b[0].Item1).getValue(),error);
+				angleControl.Peak(a.Run(b[0].Item1).getValue(), error);
 				return (null, d => d[0]);
 			});
 		}
 
 		void setM(DataManager m)
-        {
+		{
 			this.manager = m;
-        }
+		}
 		void addVisualFx()
 		{
 			//	foreach(var v in contr)
@@ -587,9 +600,9 @@ namespace LabDataHelper
 						rc = refConverter;
 					}
 					double[] rdata = manager.getDataFromMean(index + 1, converter);
-                    double[] refdata =manager.getDataFromDescribe(manager.Count, rc);
-                    //r2
-                    double refd = refdata[index].keep(2);
+					double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
+					//r2
+					double refd = refdata[index].keep(2);
 					double readd = rdata[index].keep(2);
 					double r2 = DataManager.CalculateRSquared(refdata, rdata);
 					sb.AppendLine("[参考]" + "[参考值为: " + refd + unit + "] [测量值为:" + readd + unit + "] ");
@@ -940,48 +953,38 @@ namespace LabDataHelper
 
 		private unsafe void button12_Click(object sender, EventArgs e)
 		{
-			DVOS.writeLine(Avx2.IsSupported);
-			//var r=GaussQuadrature.integrate(GaussQuadrature.findPoints2(15), x => x * x, -1, 1);
-			//	DVOS.writeLine(r);
-				int n =20000000;
-			int n2 = 2;
-			MathBase. Complex[] d = new MathBase.Complex[n];
-			MathBase.Complex[] d2 = new MathBase.Complex[n];
-			MathBase.Complex[] r = new MathBase.Complex[n];
-			MathBase.Complex[] r2 = new MathBase.Complex[n];
-			double[] ad=new double[n];
-			double[] rd1,rd2 ;
-			double s1, s2;
-			MathBase.Complex c = 1;
-		var rd = new Random();
-				for (int i = 0; i < n; i++)
-			{
-				d[i]=i-MathBase.Complex.I*i;
-				ad[i]=i;
-				d2[i] = i - MathBase.Complex.I * i; ;
-			}
-			var v = new Stopwatch();
-			v.Start();
-			for (int j = 0; j < n2; j++)
-				s1 = Helper.muldouble2(ad, ad);
-			//FFTHelper.MultiplyN(ad);
-			v.Stop();
-			DVOS.writeLine(v.ElapsedMilliseconds);
-			v.Restart();
-
-			for (int j = 0; j < n2; j++)
-				s2 = Helper.muldouble(ad,ad);
-			//FFTHelper.MultiplyM(ad);
-			v.Stop();
-			DVOS.writeLine(v.ElapsedMilliseconds);
-
-			if(r.Length<10)
-			{
-				DVOS.outPut(r);
-				DVOS.outPut(r2);
-			}
-
+			Bitmap bitmap = new Bitmap(256, 256);
 			
+			using (Graphics g = Graphics.FromImage(bitmap))
+			{
+				Brush b0 = new SolidBrush(Color.Blue);
+				g.FillRectangle(b0, new Rectangle(0, 0, 256, 256));
+				Font f = new Font(Font.FontFamily,72);
+				PointF p = new PointF(0, 0);
+				Brush b = new SolidBrush(Color.White);
+				g.DrawString("A", f, b, p);
+				bitmap bi0 = bitmap.toBitmap();
+				var v = TriangleMap<int>.getTriangleMap(bi0, TriangleMap<int>.getCheckerByBackground(bi0,Colors.Blue));
+				bi0.paint(Colors.Black);
+				v.setMinLevel(1);
+				v.GetTrangleInfos().render(bi0, Vector2.Zero, Vector2.One);
+				//v.Draw(bi0);
+				DVOS.writeLine(v.size);
+				bi0 = bi0.scale(100, 100);
+				new BmpFile(bi0).Save("d:\\AA.bmp");
+				
+			}
+
+			bitmap.Save("d:\\A.jpg");
+			/*
+			Plot2D p2 = new Plot2D(1920, 1080);
+			for(int i=0;i<8000;i+=400)
+			{
+				p2.add(-i, map.getValue(-i));
+			}
+			var b= p2.get();
+			new BmpFile(b).Save("d:\\test.bmp");
+			*/
 		}
 
 		private void richTextBox3_TextChanged(object sender, EventArgs e)
