@@ -26,11 +26,19 @@ namespace LabDataHelper
 	  public unsafe static	Bitmap toBitmap(this bitmap bitmap)
 		{
 			var r=new Bitmap(bitmap.Width, bitmap.Height);
-			var data=r.LockBits(new System.Drawing.Rectangle(0,0,bitmap.Width,bitmap.HWidth),System.Drawing.Imaging.ImageLockMode.ReadWrite,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			var data=r.LockBits(new System.Drawing.Rectangle(0,0,bitmap.Width,bitmap.Height),System.Drawing.Imaging.ImageLockMode.ReadWrite,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			bitmap.ToBitmap((byte*)data.Scan0, data.Stride);
 			r.UnlockBits(data);
 			return r;
 		}
+		public unsafe static bitmap toBitmap(this Bitmap bitmap0)
+		{
+			var data = bitmap0.LockBits(new System.Drawing.Rectangle(0, 0, bitmap0.Width, bitmap0.Height), System.Drawing.Imaging.ImageLockMode.ReadWrite, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			var b=bitmap.FromBitmap((byte*)data.Scan0,bitmap0.Width,bitmap0.Height, data.Stride);
+			bitmap0.UnlockBits(data);
+			return b;
+		}
+
 	}
 	public class RichBoxHelper
 	{
