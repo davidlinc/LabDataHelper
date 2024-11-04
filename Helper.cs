@@ -39,6 +39,11 @@ namespace LabDataHelper
 			r.UnlockBits(data);
 			return r;
 		}
+
+		public static int toInt(this Color c)
+		{
+			return (c.A, c.R, c.G, c.B).ARGB2Int();
+		}
 		public unsafe static bitmap toBitmap(this Bitmap bitmap0)
 		{
 			var data = bitmap0.LockBits(new System.Drawing.Rectangle(0, 0, bitmap0.Width, bitmap0.Height), System.Drawing.Imaging.ImageLockMode.ReadWrite, System.Drawing.Imaging.PixelFormat.Format32bppArgb);

@@ -9,12 +9,13 @@ namespace LabDataHelper
 	public class MoveHelper : ClientPipeHelper
 	{
 		public double position { get; private set; }
+		public static int sleepTime = 200;
 		public event Action<double> onPositionChanged;
 		public MoveHelper(string name) : base(name)
 		{
 			beforeSend += d => { if (d[0] == 0) { d[0] = (byte)InfoType.Update; }; };
 			onReceive += d => { position = BitConverter.ToDouble(d, 0);onPositionChanged(position);
-				Thread.Sleep(100);
+				Thread.Sleep(sleepTime);
 			};
 
 		}

@@ -73,16 +73,23 @@
 			button14 = new Button();
 			label12 = new Label();
 			label13 = new Label();
+			pictureBox1 = new PictureBox();
+			pictureBox2 = new PictureBox();
+			button15 = new Button();
+			openFileDialog1 = new OpenFileDialog();
+			label14 = new Label();
 			((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown2).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown3).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown4).BeginInit();
+			((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+			((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
 			SuspendLayout();
 			// 
 			// richTextBox1
 			// 
 			richTextBox1.Location = new Point(104, 98);
-			richTextBox1.Margin = new Padding(4, 4, 4, 4);
+			richTextBox1.Margin = new Padding(4);
 			richTextBox1.Name = "richTextBox1";
 			richTextBox1.Size = new Size(278, 286);
 			richTextBox1.TabIndex = 1;
@@ -93,7 +100,7 @@
 			// 
 			comboBox1.FormattingEnabled = true;
 			comboBox1.Location = new Point(500, 44);
-			comboBox1.Margin = new Padding(4, 4, 4, 4);
+			comboBox1.Margin = new Padding(4);
 			comboBox1.Name = "comboBox1";
 			comboBox1.Size = new Size(288, 39);
 			comboBox1.TabIndex = 2;
@@ -101,8 +108,8 @@
 			// 
 			// textBox2
 			// 
-			textBox2.Location = new Point(500, 491);
-			textBox2.Margin = new Padding(4, 4, 4, 4);
+			textBox2.Location = new Point(498, 502);
+			textBox2.Margin = new Padding(4);
 			textBox2.Name = "textBox2";
 			textBox2.Size = new Size(294, 38);
 			textBox2.TabIndex = 3;
@@ -110,8 +117,8 @@
 			// 
 			// button1
 			// 
-			button1.Location = new Point(655, 536);
-			button1.Margin = new Padding(4, 4, 4, 4);
+			button1.Location = new Point(653, 547);
+			button1.Margin = new Padding(4);
 			button1.Name = "button1";
 			button1.Size = new Size(143, 46);
 			button1.TabIndex = 4;
@@ -122,7 +129,7 @@
 			// richTextBox2
 			// 
 			richTextBox2.Location = new Point(500, 99);
-			richTextBox2.Margin = new Padding(4, 4, 4, 4);
+			richTextBox2.Margin = new Padding(4);
 			richTextBox2.Name = "richTextBox2";
 			richTextBox2.Size = new Size(288, 286);
 			richTextBox2.TabIndex = 6;
@@ -132,7 +139,7 @@
 			// richTextBox3
 			// 
 			richTextBox3.Location = new Point(892, 102);
-			richTextBox3.Margin = new Padding(4, 4, 4, 4);
+			richTextBox3.Margin = new Padding(4);
 			richTextBox3.Name = "richTextBox3";
 			richTextBox3.ReadOnly = true;
 			richTextBox3.Size = new Size(928, 643);
@@ -143,7 +150,7 @@
 			// button3
 			// 
 			button3.Location = new Point(498, 394);
-			button3.Margin = new Padding(4, 4, 4, 4);
+			button3.Margin = new Padding(4);
 			button3.Name = "button3";
 			button3.Size = new Size(140, 46);
 			button3.TabIndex = 9;
@@ -154,7 +161,7 @@
 			// button5
 			// 
 			button5.Location = new Point(22, 394);
-			button5.Margin = new Padding(4, 4, 4, 4);
+			button5.Margin = new Padding(4);
 			button5.Name = "button5";
 			button5.Size = new Size(116, 46);
 			button5.TabIndex = 11;
@@ -165,7 +172,7 @@
 			// button6
 			// 
 			button6.Location = new Point(146, 394);
-			button6.Margin = new Padding(4, 4, 4, 4);
+			button6.Margin = new Padding(4);
 			button6.Name = "button6";
 			button6.Size = new Size(116, 46);
 			button6.TabIndex = 12;
@@ -176,7 +183,7 @@
 			// button7
 			// 
 			button7.Location = new Point(270, 394);
-			button7.Margin = new Padding(4, 4, 4, 4);
+			button7.Margin = new Padding(4);
 			button7.Name = "button7";
 			button7.Size = new Size(116, 46);
 			button7.TabIndex = 13;
@@ -227,7 +234,7 @@
 			// button8
 			// 
 			button8.Location = new Point(647, 394);
-			button8.Margin = new Padding(4, 4, 4, 4);
+			button8.Margin = new Padding(4);
 			button8.Name = "button8";
 			button8.Size = new Size(146, 46);
 			button8.TabIndex = 18;
@@ -237,8 +244,8 @@
 			// 
 			// button9
 			// 
-			button9.Location = new Point(498, 536);
-			button9.Margin = new Padding(4, 4, 4, 4);
+			button9.Location = new Point(496, 547);
+			button9.Margin = new Padding(4);
 			button9.Name = "button9";
 			button9.Size = new Size(143, 46);
 			button9.TabIndex = 19;
@@ -249,7 +256,7 @@
 			// richTextBox4
 			// 
 			richTextBox4.Location = new Point(22, 502);
-			richTextBox4.Margin = new Padding(4, 4, 4, 4);
+			richTextBox4.Margin = new Padding(4);
 			richTextBox4.Name = "richTextBox4";
 			richTextBox4.Size = new Size(376, 174);
 			richTextBox4.TabIndex = 20;
@@ -260,16 +267,16 @@
 			// 
 			comboBox3.FormattingEnabled = true;
 			comboBox3.Location = new Point(104, 44);
-			comboBox3.Margin = new Padding(4, 4, 4, 4);
+			comboBox3.Margin = new Padding(4);
 			comboBox3.Name = "comboBox3";
-			comboBox3.Size = new Size(278, 39);
+			comboBox3.Size = new Size(231, 39);
 			comboBox3.TabIndex = 21;
 			comboBox3.SelectedIndexChanged += comboBox3_SelectedIndexChanged;
 			// 
 			// button10
 			// 
 			button10.Location = new Point(172, 686);
-			button10.Margin = new Padding(4, 4, 4, 4);
+			button10.Margin = new Padding(4);
 			button10.Name = "button10";
 			button10.Size = new Size(151, 46);
 			button10.TabIndex = 22;
@@ -280,7 +287,7 @@
 			// numericUpDown1
 			// 
 			numericUpDown1.Location = new Point(277, 781);
-			numericUpDown1.Margin = new Padding(4, 4, 4, 4);
+			numericUpDown1.Margin = new Padding(4);
 			numericUpDown1.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
 			numericUpDown1.Name = "numericUpDown1";
 			numericUpDown1.Size = new Size(104, 38);
@@ -311,7 +318,7 @@
 			// numericUpDown2
 			// 
 			numericUpDown2.Location = new Point(92, 781);
-			numericUpDown2.Margin = new Padding(4, 4, 4, 4);
+			numericUpDown2.Margin = new Padding(4);
 			numericUpDown2.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
 			numericUpDown2.Name = "numericUpDown2";
 			numericUpDown2.Size = new Size(104, 38);
@@ -320,7 +327,7 @@
 			// button11
 			// 
 			button11.Location = new Point(22, 450);
-			button11.Margin = new Padding(4, 4, 4, 4);
+			button11.Margin = new Padding(4);
 			button11.Name = "button11";
 			button11.Size = new Size(151, 46);
 			button11.TabIndex = 27;
@@ -332,7 +339,7 @@
 			// 
 			comboBox4.FormattingEnabled = true;
 			comboBox4.Location = new Point(1012, 40);
-			comboBox4.Margin = new Padding(4, 4, 4, 4);
+			comboBox4.Margin = new Padding(4);
 			comboBox4.Name = "comboBox4";
 			comboBox4.Size = new Size(260, 39);
 			comboBox4.TabIndex = 29;
@@ -361,7 +368,7 @@
 			// button4
 			// 
 			button4.Location = new Point(1092, 828);
-			button4.Margin = new Padding(4, 4, 4, 4);
+			button4.Margin = new Padding(4);
 			button4.Name = "button4";
 			button4.Size = new Size(146, 46);
 			button4.TabIndex = 34;
@@ -373,7 +380,7 @@
 			// 
 			comboBox2.FormattingEnabled = true;
 			comboBox2.Location = new Point(935, 779);
-			comboBox2.Margin = new Padding(4, 4, 4, 4);
+			comboBox2.Margin = new Padding(4);
 			comboBox2.Name = "comboBox2";
 			comboBox2.Size = new Size(304, 39);
 			comboBox2.TabIndex = 33;
@@ -381,7 +388,7 @@
 			// button2
 			// 
 			button2.Location = new Point(935, 828);
-			button2.Margin = new Padding(4, 4, 4, 4);
+			button2.Margin = new Padding(4);
 			button2.Name = "button2";
 			button2.Size = new Size(146, 46);
 			button2.TabIndex = 32;
@@ -392,7 +399,7 @@
 			// textBox1
 			// 
 			textBox1.Location = new Point(20, 738);
-			textBox1.Margin = new Padding(4, 4, 4, 4);
+			textBox1.Margin = new Padding(4);
 			textBox1.Name = "textBox1";
 			textBox1.Size = new Size(376, 38);
 			textBox1.TabIndex = 36;
@@ -405,7 +412,7 @@
 			checkBox1.Checked = true;
 			checkBox1.CheckState = CheckState.Checked;
 			checkBox1.Location = new Point(22, 694);
-			checkBox1.Margin = new Padding(4, 4, 4, 4);
+			checkBox1.Margin = new Padding(4);
 			checkBox1.Name = "checkBox1";
 			checkBox1.Size = new Size(142, 35);
 			checkBox1.TabIndex = 38;
@@ -416,7 +423,7 @@
 			// textBox3
 			// 
 			textBox3.Location = new Point(332, 691);
-			textBox3.Margin = new Padding(4, 4, 4, 4);
+			textBox3.Margin = new Padding(4);
 			textBox3.Name = "textBox3";
 			textBox3.Size = new Size(64, 38);
 			textBox3.TabIndex = 39;
@@ -426,7 +433,7 @@
 			// button12
 			// 
 			button12.Location = new Point(1285, 35);
-			button12.Margin = new Padding(4, 4, 4, 4);
+			button12.Margin = new Padding(4);
 			button12.Name = "button12";
 			button12.Size = new Size(150, 46);
 			button12.TabIndex = 40;
@@ -437,7 +444,7 @@
 			// numericUpDown3
 			// 
 			numericUpDown3.Location = new Point(92, 828);
-			numericUpDown3.Margin = new Padding(4, 4, 4, 4);
+			numericUpDown3.Margin = new Padding(4);
 			numericUpDown3.Name = "numericUpDown3";
 			numericUpDown3.Size = new Size(104, 38);
 			numericUpDown3.TabIndex = 41;
@@ -457,8 +464,8 @@
 			checkBox2.AutoSize = true;
 			checkBox2.Checked = true;
 			checkBox2.CheckState = CheckState.Checked;
-			checkBox2.Location = new Point(388, 248);
-			checkBox2.Margin = new Padding(4, 4, 4, 4);
+			checkBox2.Location = new Point(388, 235);
+			checkBox2.Margin = new Padding(4);
 			checkBox2.Name = "checkBox2";
 			checkBox2.Size = new Size(94, 66);
 			checkBox2.TabIndex = 43;
@@ -471,7 +478,7 @@
 			numericUpDown4.DecimalPlaces = 3;
 			numericUpDown4.Increment = new decimal(new int[] { 1, 0, 0, 196608 });
 			numericUpDown4.Location = new Point(388, 189);
-			numericUpDown4.Margin = new Padding(4, 4, 4, 4);
+			numericUpDown4.Margin = new Padding(4);
 			numericUpDown4.Name = "numericUpDown4";
 			numericUpDown4.Size = new Size(104, 38);
 			numericUpDown4.TabIndex = 44;
@@ -491,7 +498,7 @@
 			// button13
 			// 
 			button13.Location = new Point(498, 781);
-			button13.Margin = new Padding(4, 4, 4, 4);
+			button13.Margin = new Padding(4);
 			button13.Name = "button13";
 			button13.Size = new Size(168, 46);
 			button13.TabIndex = 46;
@@ -513,7 +520,7 @@
 			// button14
 			// 
 			button14.Location = new Point(498, 865);
-			button14.Margin = new Padding(4, 4, 4, 4);
+			button14.Margin = new Padding(4);
 			button14.Name = "button14";
 			button14.Size = new Size(168, 46);
 			button14.TabIndex = 48;
@@ -535,18 +542,65 @@
 			// label13
 			// 
 			label13.AutoSize = true;
-			label13.Location = new Point(498, 914);
+			label13.Location = new Point(500, 915);
 			label13.Margin = new Padding(4, 0, 4, 0);
 			label13.Name = "label13";
 			label13.Size = new Size(86, 31);
 			label13.TabIndex = 50;
 			label13.Text = "未连接";
 			// 
+			// pictureBox1
+			// 
+			pictureBox1.Location = new Point(892, 102);
+			pictureBox1.Name = "pictureBox1";
+			pictureBox1.Size = new Size(928, 643);
+			pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+			pictureBox1.TabIndex = 51;
+			pictureBox1.TabStop = false;
+			pictureBox1.Click += pictureBox1_Click;
+			// 
+			// pictureBox2
+			// 
+			pictureBox2.Location = new Point(1780, 102);
+			pictureBox2.Name = "pictureBox2";
+			pictureBox2.Size = new Size(40, 40);
+			pictureBox2.TabIndex = 52;
+			pictureBox2.TabStop = false;
+			pictureBox2.Click += pictureBox2_Click;
+			// 
+			// button15
+			// 
+			button15.Location = new Point(336, 44);
+			button15.Margin = new Padding(4);
+			button15.Name = "button15";
+			button15.Size = new Size(45, 39);
+			button15.TabIndex = 53;
+			button15.Text = "...";
+			button15.UseVisualStyleBackColor = true;
+			button15.Click += button15_Click;
+			// 
+			// openFileDialog1
+			// 
+			openFileDialog1.FileName = "openFileDialog1";
+			// 
+			// label14
+			// 
+			label14.AutoSize = true;
+			label14.Location = new Point(500, 458);
+			label14.Margin = new Padding(4, 0, 4, 0);
+			label14.Name = "label14";
+			label14.Size = new Size(0, 31);
+			label14.TabIndex = 54;
+			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(14F, 31F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(1887, 1026);
+			ClientSize = new Size(1887, 977);
+			Controls.Add(label14);
+			Controls.Add(button15);
+			Controls.Add(pictureBox2);
+			Controls.Add(pictureBox1);
 			Controls.Add(label13);
 			Controls.Add(label12);
 			Controls.Add(button14);
@@ -591,7 +645,7 @@
 			Controls.Add(textBox2);
 			Controls.Add(comboBox1);
 			Controls.Add(richTextBox1);
-			Margin = new Padding(4, 4, 4, 4);
+			Margin = new Padding(4);
 			Name = "Form1";
 			Text = "计数宝";
 			Load += Form1_Load;
@@ -599,6 +653,8 @@
 			((System.ComponentModel.ISupportInitialize)numericUpDown2).EndInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown3).EndInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown4).EndInit();
+			((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+			((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -649,5 +705,10 @@
 		private Button button14;
 		private Label label12;
 		private Label label13;
+		private PictureBox pictureBox1;
+		private PictureBox pictureBox2;
+		private Button button15;
+		private OpenFileDialog openFileDialog1;
+		private Label label14;
 	}
 }

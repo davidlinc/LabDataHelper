@@ -11,9 +11,14 @@ using System.Text;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using Vector2 = MathBase.Vector2;
+using System.ComponentModel;
 
 namespace LabDataHelper
 {
+	enum inputMode
+	{
+		None,Add,Run
+	}
 	public partial class Form1 : Form
 	{
 		DataManager manager = new DataManager("数据");
@@ -21,6 +26,8 @@ namespace LabDataHelper
 		DataConverter converter;
 		DataConverter refConverter;
 		Helper helper;
+		string rootPath;
+		string dataPath="data";
 		LerpFunction map = new LerpFunction(8);
 		MoveHelper move = new MoveHelper("dvconnect");
 		AngleDataHelper angleData = new AngleDataHelper("lzzconnect");
@@ -28,7 +35,8 @@ namespace LabDataHelper
 		DoubleStack<string> codeRecord = new();
 		double maxRef = double.PositiveInfinity;
 		AngleControl angleControl;
-
+		(string,int) recommend;
+		inputMode mode=inputMode.None;
 		DataSet baseSet
 		{
 			get
@@ -41,6 +49,7 @@ namespace LabDataHelper
 				return null;
 			}
 		}
+		bitmap bitmanpCross;
 		Settings settings = new Settings();
 		string unit;
 		int lastSelect = -1;
@@ -62,7 +71,16 @@ namespace LabDataHelper
 			getter.register('}', -1);
 			getter.register('[', 1);
 			getter.register(']', -1);
+			bitmanpCross = new bitmap(40, 40);
+			bitmanpCross.paint(Color.Gray.toInt());
+			bitmanpCross.drawCircle(16, new Vector2(20, 20), Color.Red.toInt());
+			pictureBox2.Image = bitmanpCross.toBitmap();
 
+	        rootPath=dataPath = Application.StartupPath + "data";
+			pictureBox1.MouseClick += (o, e) =>
+			{
+
+			};
 			FFTHelper.setPreLength(20);
 			comboBox1.KeyDown += (o, e) =>
 			{
@@ -96,36 +114,66 @@ namespace LabDataHelper
 
 			};
 			comboBox3.TextChanged += nameChanged;
-			comboBox3.Leave += (o, e) => { updateFiles(); };
+			comboBox3.DropDown += (o, e) => { updateFiles(); };
 			DVOS.stringWriter = (s) => { richTextBox4.Text += s; };
 			manager.OnChnage += onChange;
 			if (File.Exists("settings.data"))
 			{
-				settings.load("settings.data");
-				comboBox3.Text = settings.lastName;
-				manager.name = settings.lastName;
+				loadSettings();
+
 			}
 			updateInfo();
-			textBox2.KeyDown += (o, e) =>
+			
+			textBox2.PreviewKeyDown+= (o, e) =>
 				{
 					if (e.KeyCode == Keys.Enter)
 					{
-						try
+						if(mode==inputMode.Add)
 						{
-							manager.addValue(comboBox1.SelectedIndex, double.Parse(textBox2.Text));
-							textBox2.Text = "";
+                  	try
+						{
+							manager.addValue(comboBox1.SelectedIndex, managerM.Run(textBox2.Text).getValue());
+								codeInput();
 							textBox2.Focus();
 						}
 						catch { }
+						}
+						else if(mode==inputMode.Run)
+						{
+							managerM.Run(textBox2.Text).getValue(1,2,3);
+							codeInput();
+							textBox2.Focus();
+						}
+					
+					}
+					else if(e.KeyCode == Keys.Up)
+					{
+						lastCode();
+						e.IsInputKey = true;
+						textBox2.SelectionStart = textBox2.TextLength;
+					}
+					else if(e.KeyCode==Keys.Down)
+					{
+						nextCode();
+						e.IsInputKey = true;
+						textBox2.SelectionStart = textBox2.TextLength;
+					}
+					else if(e.KeyCode==Keys.Tab)
+					{
+						
+						e.IsInputKey = true;
+						insertRecommend();
 					}
 				};
+
+			hideImage();
 		}
 
 		void registerFunc(
 			)
 		{
 
-			managerM.regiseterMethod("setText", (a, b) =>
+			managerM.regiseterMethod("print", (a, b) =>
 			{
 				if (b != null && b.Length > 0)
 				{
@@ -149,30 +197,68 @@ namespace LabDataHelper
 				}
 				return (null, (data) => 0);
 			});
-			managerM.regiseterMethod("getName", (a, b) =>
+			managerM.regiseterMethod("getname", (a, b) =>
 			{
+				return (this.Text, d => 0);
+			});
+			managerM.regiseterMethod("calibrate", (a, b) =>
+			{
+				if(b.Length>=2)
+				{
+
+				int index = (int)a.Run(b[0].Item1).getValue();
+				var v2 = a.Run(b[1].Item1);
+					manager.calibrate(index, converter != null ? converter : d => d, d => v2.getValue(d));
+				}
 
 				return (this.Text, d => 0);
 			});
-
-			managerM.regiseterMethod("Move", (a, b) =>
+			managerM.regiseterMethod("clear", (a, b) =>
+			{
+				richTextBox4.Text = "";
+				return (this.Text, d => 0);
+			});
+			managerM.regiseterMethod("sleeptime", (a, b) =>
+			{
+				return (MoveHelper.sleepTime, d => MoveHelper.sleepTime);
+			});
+			managerM.regiseterMethod("maxrecord", (a, b) =>
+			{
+				return (AngleControl.max, d => AngleControl.max);
+			});
+			managerM.regiseterMethod("move", (a, b) =>
 			{
 				move.move(a.Run(b[0].Item1).getValue());
 				return (null, d => d[0]);
 			});
-
-			managerM.regiseterMethod("MoveTo", (a, b) =>
+			managerM.regiseterMethod("put", (a, b) =>
+			{
+				MoveHelper.sleepTime=(int) (a.Run(b[0].Item1).getValue());
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("mrc", (a, b) =>
+			{
+				AngleControl.max = (int)(a.Run(b[0].Item1).getValue());
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("moveto", (a, b) =>
 			{
 				move.moveTo(a.Run(b[0].Item1).getValue());
 
 				return (null, d => d[0]);
 			});
-			managerM.regiseterMethod("MAR", (a, b) =>
+			managerM.regiseterMethod("mar", (a, b) =>
 			{
 
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				//DataManager nm = new DataManager(manager.name, manager.describe);
-				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager);
+				DataConverter d = null;
+				if(b.Length>=3)
+				{
+					var mj = managerM.Run(b[2].Item1);
+					d = v => mj.getValue(v);
+				}
+				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager,d);
 
 
 				return (null, d => d[0]);
@@ -180,23 +266,8 @@ namespace LabDataHelper
 
 			managerM.registerMathFunc("lf", map, 1);
 
-			managerM.regiseterMethod("slowMAR", (a, b) =>
-			{
-
-				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
-				//DataManager nm = new DataManager(manager.name, manager.describe);
-				int mt = 10;
-				if (b.Length > 2)
-				{
-					mt = (int)managerM.Run(b[2].Item1).getValue();
-
-				}
-				angleControl.slowMAR(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager, mt);
-
-
-				return (null, d => d[0]);
-			});
-			managerM.regiseterMethod("Delete", (a, b) =>
+		
+			managerM.regiseterMethod("delete", (a, b) =>
 			{
 
 				int s = (int)(managerM.Run(b[0].Item1).getValue());
@@ -217,7 +288,33 @@ namespace LabDataHelper
 				{
 					rc = refConverter;
 				}
-				double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
+				double[] refdata;
+				if(checkBox2.Checked)
+				{
+try
+				{
+
+				refdata= manager.getDataFromDescribe(manager.Count, rc,false);
+				}
+				catch
+				{
+					refdata = new double[manager.Count];
+					for(int i = 0; i < manager.Count; i++)
+					{
+						refdata[i] = i;
+					}
+				}
+				}
+				else
+				{
+
+					refdata = new double[manager.Count];
+					for (int i = 0; i < manager.Count; i++)
+					{
+						refdata[i] = i;
+					}
+				}
+
 				for (int i = 0; i < refdata.Length; i++)
 				{
 					map.Add((refdata[i], manager[i].getMean(converter)));
@@ -231,13 +328,16 @@ namespace LabDataHelper
 				{
 					rc = refConverter;
 				}
-				double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
+				double[] refdata = manager.getDataFromDescribe(manager.Count, rc, false);
 				for (int i = 0; i < refdata.Length; i++)
 				{
 					map.Add((manager[i].Mean, refdata[i]));
 				}
 				return (null, d => d[0]);
 			});
+
+	
+
 			/*
 			managerM.regiseterMethod("Merge", (a, b) =>
 			{
@@ -257,7 +357,7 @@ namespace LabDataHelper
 			}); 
 			*/
 
-			managerM.regiseterMethod("Rename", (a, b) =>
+			managerM.regiseterMethod("reorder", (a, b) =>
 			{
 				try
 				{
@@ -269,7 +369,7 @@ namespace LabDataHelper
 				}
 				return (null, d => d[0]);
 			});
-			managerM.regiseterMethod("Peak", (a, b) =>
+			managerM.regiseterMethod("peak", (a, b) =>
 			{
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				double error = 2;
@@ -282,11 +382,55 @@ namespace LabDataHelper
 				angleControl.Peak(a.Run(b[0].Item1).getValue(), error);
 				return (null, d => d[0]);
 			});
+			managerM.regiseterMethod("peakf", (a, b) =>
+			{
+				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
+				double error = 8;
+				if (b.Length >= 2)
+				{
+					error = a.Run(b[1].Item1).getValue();
+
+				}
+
+				angleControl.Peakf(a.Run(b[0].Item1).getValue(), error);
+				return (null, d => d[0]);
+			});
 		}
 
+		void showImage()
+		{
+			pictureBox1.Show();
+			pictureBox2.Show();
+			pictureBox2.BringToFront();
+		}
+
+		void hideImage()
+		{
+			pictureBox1.Hide();
+			pictureBox2.Hide();
+		}
 		void setM(DataManager m)
 		{
 			this.manager = m;
+		}
+		void setInputMode(inputMode mode)
+		{
+			this.mode = mode;
+			if (mode == inputMode.None)
+			{
+				button1.ForeColor = Color.Black;
+				button9.ForeColor = Color.Black;
+			}
+			else if (mode == inputMode.Add)
+			{
+				button1.ForeColor = Color.LightSeaGreen;
+				button9.ForeColor = Color.Black;
+			}
+			else if (mode == inputMode.Run)
+			{
+				button1.ForeColor = Color.Black;
+				button9.ForeColor = Color.LightSeaGreen;
+			}
 		}
 		void addVisualFx()
 		{
@@ -295,7 +439,7 @@ namespace LabDataHelper
 
 		void updateFiles()
 		{
-			string path = "data";
+			string path = dataPath;
 			if (!Directory.Exists(path))
 			{
 				Directory.CreateDirectory(path);
@@ -600,7 +744,7 @@ namespace LabDataHelper
 						rc = refConverter;
 					}
 					double[] rdata = manager.getDataFromMean(index + 1, converter);
-					double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
+					double[] refdata = manager.getDataFromDescribe(manager.Count, rc,false);
 					//r2
 					double refd = refdata[index].keep(2);
 					double readd = rdata[index].keep(2);
@@ -671,6 +815,7 @@ namespace LabDataHelper
 
 		private void button1_Click(object sender, EventArgs e)
 		{
+			setInputMode(inputMode.Add);
 			if (comboBox1.SelectedItem is DataSet)
 			{
 
@@ -693,9 +838,40 @@ namespace LabDataHelper
 			updateSetInfo(converter, unit);
 		}
 
+		public void insertRecommend()
+		{
+			if(recommend.Item1!=null)
+			{
+				int r = recommend.Item2;
+				textBox2.Text=recommend.Item1;
+				textBox2.Focus();
+				textBox2.SelectionStart=r;
+			}
+		}
 		private void textBox2_TextChanged(object sender, EventArgs e)
 		{
+			recommendString();
+		}
 
+		public void recommendString()
+		{
+			string s = textBox2.Text;
+			int si = textBox2.SelectionStart;
+			string es = s.Substring(si);
+			s = s.Substring(0, si);
+
+			var recommend = managerM.getRecommend(s);
+			if (recommend.Item1 != null)
+			{
+				string r = recommend.Item1.Substring(s.Length - recommend.Item2);
+				label14.Text = recommend.Item1;
+				this.recommend = (s + r + es, si + r.Length);
+			}
+			else
+			{
+				this.recommend = (null, si);
+				label14.Text = "~";
+			}
 		}
 
 		private void button4_Click(object sender, EventArgs e)
@@ -731,24 +907,56 @@ namespace LabDataHelper
 			unit = null;
 			managerM.clear();
 
-			if (!Directory.Exists("data"))
+			if (!Directory.Exists(dataPath))
 			{
-				Directory.CreateDirectory("data");
+				Directory.CreateDirectory(dataPath);
 			}
-			manager.save("data\\" + manager.name + ".data");
+			manager.save(dataPath + "\\" + manager.name + ".data");
 			registerFunc();
 			readDescribe(manager.describe);
+			saveSettings();
+		}
+		void saveSettings()
+		{ 
 			settings.lastName = manager.name;
+			settings.f16 = textBox1.Text;
+			settings.f16code = textBox3.Text;
+			settings.lastPath = dataPath;
+			settings.max = AngleControl.max;
+			settings.reF = checkBox2.Checked;
+			settings.sleepTime = MoveHelper.sleepTime;
+			settings.f16f = checkBox1.Checked;
+			settings.r2 = (double)numericUpDown4.Value;
 			settings.save("settings.data");
 		}
-
+		void loadSettings()
+		{
+			try { 	
+			if(settings.load("settings.data"))
+			{
+	        comboBox3.Text = settings.lastName;
+			textBox3.Text = settings.f16code;
+			manager.name = settings.lastName;
+			dataPath = settings.lastPath;
+			checkBox2.Checked = settings.reF;
+			checkBox1.Checked = settings.f16f;
+			numericUpDown4.Value =(decimal) settings.r2;
+			textBox1.Text = settings.f16;
+			MoveHelper.sleepTime = settings.sleepTime;
+			AngleControl.max = settings.max;
+				}
+			}
+		
+			catch { }
+		
+		}
 		private void button6_Click(object sender, EventArgs e)
 		{
 			lastSelectDataset = -1;
 
-			if (File.Exists("data\\" + manager.name + ".data"))
+			if (File.Exists(dataPath+"\\" + manager.name + ".data"))
 			{
-				manager.load("data\\" + manager.name + ".data");
+				manager.load(dataPath + "\\" + manager.name + ".data");
 				updateCombo1();
 				richTextBox1.Text = manager.describe;
 				converter = null;
@@ -802,6 +1010,7 @@ namespace LabDataHelper
 		}
 		private void button9_Click_1(object sender, EventArgs e)
 		{
+			setInputMode(inputMode.Run);
 			managerM.Run(textBox2.Text).getValue(1, 2, 3);
 			codeInput();
 			textBox2.Focus();
@@ -953,38 +1162,15 @@ namespace LabDataHelper
 
 		private unsafe void button12_Click(object sender, EventArgs e)
 		{
-			Bitmap bitmap = new Bitmap(256, 256);
-			
-			using (Graphics g = Graphics.FromImage(bitmap))
-			{
-				Brush b0 = new SolidBrush(Color.Blue);
-				g.FillRectangle(b0, new Rectangle(0, 0, 256, 256));
-				Font f = new Font(Font.FontFamily,72);
-				PointF p = new PointF(0, 0);
-				Brush b = new SolidBrush(Color.White);
-				g.DrawString("A", f, b, p);
-				bitmap bi0 = bitmap.toBitmap();
-				var v = TriangleMap<int>.getTriangleMap(bi0, TriangleMap<int>.getCheckerByBackground(bi0,Colors.Blue));
-				bi0.paint(Colors.Black);
-				v.setMinLevel(1);
-				v.GetTrangleInfos().render(bi0, Vector2.Zero, Vector2.One);
-				//v.Draw(bi0);
-				DVOS.writeLine(v.size);
-				bi0 = bi0.scale(100, 100);
-				new BmpFile(bi0).Save("d:\\AA.bmp");
-				
-			}
 
-			bitmap.Save("d:\\A.jpg");
-			/*
-			Plot2D p2 = new Plot2D(1920, 1080);
-			for(int i=0;i<8000;i+=400)
-			{
-				p2.add(-i, map.getValue(-i));
-			}
-			var b= p2.get();
-			new BmpFile(b).Save("d:\\test.bmp");
-			*/
+
+			Plot2D p2 = map.Plot(1800, 1080);
+
+			var b = p2.get();
+			showImage();
+			pictureBox1.Image = b.toBitmap();
+			pictureBox1.Image.Save("test.jpg");
+
 		}
 
 		private void richTextBox3_TextChanged(object sender, EventArgs e)
@@ -1039,6 +1225,37 @@ namespace LabDataHelper
 		private void label12_Click(object sender, EventArgs e)
 		{
 			angleData.update();
+		}
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			saveSettings();
+			base.OnClosing(e);
+
+		}
+		private void pictureBox1_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void pictureBox2_Click(object sender, EventArgs e)
+		{
+			hideImage();
+		}
+
+		private void button15_Click(object sender, EventArgs e)
+		{
+
+			FolderSelectDialog folderDialog = new FolderSelectDialog
+			{
+				Title = "请选择一个文件夹",
+				InitialDirectory = rootPath
+			};
+
+			if (folderDialog.ShowDialog())
+			{
+				dataPath = folderDialog.SelectedPath;
+			}
+
 		}
 	}
 }

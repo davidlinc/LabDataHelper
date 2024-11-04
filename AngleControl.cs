@@ -15,6 +15,7 @@ namespace LabDataHelper
 		AngleDataHelper angle;
 		MoveHelper move;
 		double f = 500;
+		public static int max = 8;
 		 public double angleRealtime { get; private set; }
 		volatile bool stable = false;
 		volatile Queue<double> posQueue=new Queue<double>();
@@ -39,12 +40,13 @@ namespace LabDataHelper
         public double refPos { get; private set; } = 15;
 
 		public double refAngleRealtime { get { return Math.Atan((posRealtime - refPos + refAngle) / f); } }
-		int max = 8;
+		
 		SourceOperator selectIndex=d=> { return d[0]; };
 		Action<double> onAngleUpdate;
 		Action<AngleDataHelper> onError;
 		short[] rawData;
 		double lastMove = 0;
+		bool IntMove = false;
 		public AngleControl(AngleDataHelper angle,MoveHelper move)
 		{
 			this.angle = angle;
@@ -122,6 +124,10 @@ namespace LabDataHelper
         }
 		public void Move(double dx)
 		{
+			if(IntMove&&Math.Abs(dx)<1)
+			{
+				dx=Math.Sign(dx);
+			}
 			move.move(dx);
 			stable = false;
 			lastMove = dx;
@@ -146,40 +152,6 @@ namespace LabDataHelper
 			}
 		}
 
-		public void slowMAR(double dx, int times, DataManager ma, int maxPerTime = 10)
-		{
-			Task.Run(() =>
-			{
-				int loop = times / maxPerTime;
-				int rest = times - loop* maxPerTime+1;
-				double ddx = dx * loop;
-				double p0= angleRealtime;
-                double pos = angleRealtime;
-				int last = loop - 1;
-				for (int i = 0; i < loop; i++)
-				{
-
-                    Peak(p0);
-                    waitRunning();
-					if(i!=0)
-					{
-						setZero(ma);
-					}
-                    Peak(pos);
-					waitRunning();
-					moveAndRecordRaw(ddx, maxPerTime-1, ma, false,i==0);
-					waitRunning();
-					if(i==last)
-					{
-
-                        moveAndRecordRaw(dx, rest, ma, i>0, i == 0);
-						waitRunning();
-                    }
-					pos += dx/0.001*8;
-				}
-				ma.orderByDescribe();
-			});
-		}
 		public void setZero(DataManager ma)
 		{
 
@@ -204,9 +176,10 @@ namespace LabDataHelper
 		{
 			while (isRunning) ;
 		}
-		public void moveAndRecordRaw(double dx, int times, DataManager ma, bool deleteFirst = false, bool resetZero=true)
+		public void moveAndRecordRaw(double dx, int times, DataManager ma,DataConverter data=null, bool deleteFirst = false)
 		{
 
+			bool resetZero = data != null;
 				isRunning = true;
 			Task.Run(() =>
 			{
@@ -223,7 +196,7 @@ namespace LabDataHelper
                     if (resetZero)
                     {
 
-                        zeroPos = posRealtime - angleRealtime / 8 * 0.001;
+                        zeroPos = posRealtime - data(angleRealtime );
                     }
                     ma.changeDescribe(index, (double.Parse(ma[index].describe) - zeroPos).ToString());
                     lock (rawData)
@@ -292,8 +265,66 @@ namespace LabDataHelper
 			});
 		}
 
+		public void Peakf(double dir, double error = 8, int maxTry = 100)
+		{
+			IntMove = true;
+			isRunning = true;
+			if (maxTry <= 0)
+			{
+				isRunning = false;
+				return;
+			}
+			if (dir == 0)
+			{
+				dir = 1;
+			}
+			Task.Run(() => {
+				angle.update();
+				bool waitF = true;
+				double refPos = 0;
+				onAngleUpdate = d => {
+					Volatile.Write(ref waitF, false);
+
+				};
+
+				onError = d => {
+					Volatile.Write(ref waitF, false);
+				};
+				while (Volatile.Read(ref waitF)) { };
+
+				if (Math.Abs(angleRealtime - dir) < error)
+				{
+					if (angleRealtime * dir > 0)
+					{
+
+						isRunning = false;
+						return;
+					}
+				}
+
+				
+				if (Math.Abs(angleRealtime - dir) < 200)
+				{
+				
+
+					Move((dir - angleRealtime) /-9.7/4);
+					
+				}
+				else
+				{
+
+					Move((dir - angleRealtime) /-9.7*0.75);
+				}
+				wait();
+				Peakf(dir, error, maxTry - 1);
+			});
+
+
+
+		}
 		public void Peak(double dir,double error=2,int maxTry = 100,bool setRef=false)
 		{
+			IntMove = false;
 			isRunning = true;
 			if (maxTry <= 0)
 			{
