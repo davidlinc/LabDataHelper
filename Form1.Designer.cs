@@ -548,6 +548,7 @@
 			label13.Size = new Size(86, 31);
 			label13.TabIndex = 50;
 			label13.Text = "未连接";
+			label13.Click += label13_Click;
 			// 
 			// pictureBox1
 			// 

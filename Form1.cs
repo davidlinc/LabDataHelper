@@ -27,7 +27,7 @@ namespace LabDataHelper
 		DataConverter refConverter;
 		Helper helper;
 		string rootPath;
-		string dataPath="data";
+		string dataPath = "data";
 		LerpFunction map = new LerpFunction(8);
 		MoveHelper move = new MoveHelper("dvconnect");
 		AngleDataHelper angleData = new AngleDataHelper("lzzconnect");
@@ -35,8 +35,8 @@ namespace LabDataHelper
 		DoubleStack<string> codeRecord = new();
 		double maxRef = double.PositiveInfinity;
 		AngleControl angleControl;
-		(string,int) recommend;
-		inputMode mode=inputMode.None;
+		(string, int) recommend;
+		inputMode mode = inputMode.None;
 		DataSet baseSet
 		{
 			get
@@ -76,7 +76,7 @@ namespace LabDataHelper
 			bitmanpCross.drawCircle(16, new Vector2(20, 20), Color.Red.toInt());
 			pictureBox2.Image = bitmanpCross.toBitmap();
 
-	        rootPath=dataPath = Application.StartupPath + "data";
+			rootPath = dataPath = Application.StartupPath + "data";
 			pictureBox1.MouseClick += (o, e) =>
 			{
 
@@ -123,44 +123,44 @@ namespace LabDataHelper
 
 			}
 			updateInfo();
-			
-			textBox2.PreviewKeyDown+= (o, e) =>
+
+			textBox2.PreviewKeyDown += (o, e) =>
 				{
 					if (e.KeyCode == Keys.Enter)
 					{
-						if(mode==inputMode.Add)
+						if (mode == inputMode.Add)
 						{
-                  	try
-						{
-							manager.addValue(comboBox1.SelectedIndex, managerM.Run(textBox2.Text).getValue());
+							try
+							{
+								manager.addValue(comboBox1.SelectedIndex, managerM.Run(textBox2.Text).getValue());
 								codeInput();
-							textBox2.Focus();
+								textBox2.Focus();
+							}
+							catch { }
 						}
-						catch { }
-						}
-						else if(mode==inputMode.Run)
+						else if (mode == inputMode.Run)
 						{
-							managerM.Run(textBox2.Text).getValue(1,2,3);
+							managerM.Run(textBox2.Text).getValue(1, 2, 3);
 							codeInput();
 							textBox2.Focus();
 						}
-					
+
 					}
-					else if(e.KeyCode == Keys.Up)
+					else if (e.KeyCode == Keys.Up)
 					{
 						lastCode();
 						e.IsInputKey = true;
 						textBox2.SelectionStart = textBox2.TextLength;
 					}
-					else if(e.KeyCode==Keys.Down)
+					else if (e.KeyCode == Keys.Down)
 					{
 						nextCode();
 						e.IsInputKey = true;
 						textBox2.SelectionStart = textBox2.TextLength;
 					}
-					else if(e.KeyCode==Keys.Tab)
+					else if (e.KeyCode == Keys.Tab)
 					{
-						
+
 						e.IsInputKey = true;
 						insertRecommend();
 					}
@@ -203,11 +203,11 @@ namespace LabDataHelper
 			});
 			managerM.regiseterMethod("calibrate", (a, b) =>
 			{
-				if(b.Length>=2)
+				if (b.Length >= 2)
 				{
 
-				int index = (int)a.Run(b[0].Item1).getValue();
-				var v2 = a.Run(b[1].Item1);
+					int index = (int)a.Run(b[0].Item1).getValue();
+					var v2 = a.Run(b[1].Item1);
 					manager.calibrate(index, converter != null ? converter : d => d, d => v2.getValue(d));
 				}
 
@@ -233,7 +233,7 @@ namespace LabDataHelper
 			});
 			managerM.regiseterMethod("put", (a, b) =>
 			{
-				MoveHelper.sleepTime=(int) (a.Run(b[0].Item1).getValue());
+				MoveHelper.sleepTime = (int)(a.Run(b[0].Item1).getValue());
 				return (null, d => d[0]);
 			});
 			managerM.regiseterMethod("mrc", (a, b) =>
@@ -253,12 +253,12 @@ namespace LabDataHelper
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				//DataManager nm = new DataManager(manager.name, manager.describe);
 				DataConverter d = null;
-				if(b.Length>=3)
+				if (b.Length >= 3)
 				{
 					var mj = managerM.Run(b[2].Item1);
 					d = v => mj.getValue(v);
 				}
-				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager,d);
+				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager, d);
 
 
 				return (null, d => d[0]);
@@ -266,7 +266,7 @@ namespace LabDataHelper
 
 			managerM.registerMathFunc("lf", map, 1);
 
-		
+
 			managerM.regiseterMethod("delete", (a, b) =>
 			{
 
@@ -289,21 +289,21 @@ namespace LabDataHelper
 					rc = refConverter;
 				}
 				double[] refdata;
-				if(checkBox2.Checked)
+				if (checkBox2.Checked)
 				{
-try
-				{
-
-				refdata= manager.getDataFromDescribe(manager.Count, rc,false);
-				}
-				catch
-				{
-					refdata = new double[manager.Count];
-					for(int i = 0; i < manager.Count; i++)
+					try
 					{
-						refdata[i] = i;
+
+						refdata = manager.getDataFromDescribe(manager.Count, rc, false);
 					}
-				}
+					catch
+					{
+						refdata = new double[manager.Count];
+						for (int i = 0; i < manager.Count; i++)
+						{
+							refdata[i] = i;
+						}
+					}
 				}
 				else
 				{
@@ -336,7 +336,7 @@ try
 				return (null, d => d[0]);
 			});
 
-	
+
 
 			/*
 			managerM.regiseterMethod("Merge", (a, b) =>
@@ -744,7 +744,7 @@ try
 						rc = refConverter;
 					}
 					double[] rdata = manager.getDataFromMean(index + 1, converter);
-					double[] refdata = manager.getDataFromDescribe(manager.Count, rc,false);
+					double[] refdata = manager.getDataFromDescribe(manager.Count, rc, false);
 					//r2
 					double refd = refdata[index].keep(2);
 					double readd = rdata[index].keep(2);
@@ -840,12 +840,12 @@ try
 
 		public void insertRecommend()
 		{
-			if(recommend.Item1!=null)
+			if (recommend.Item1 != null)
 			{
 				int r = recommend.Item2;
-				textBox2.Text=recommend.Item1;
+				textBox2.Text = recommend.Item1;
 				textBox2.Focus();
-				textBox2.SelectionStart=r;
+				textBox2.SelectionStart = r;
 			}
 		}
 		private void textBox2_TextChanged(object sender, EventArgs e)
@@ -917,7 +917,7 @@ try
 			saveSettings();
 		}
 		void saveSettings()
-		{ 
+		{
 			settings.lastName = manager.name;
 			settings.f16 = textBox1.Text;
 			settings.f16code = textBox3.Text;
@@ -931,30 +931,31 @@ try
 		}
 		void loadSettings()
 		{
-			try { 	
-			if(settings.load("settings.data"))
+			try
 			{
-	        comboBox3.Text = settings.lastName;
-			textBox3.Text = settings.f16code;
-			manager.name = settings.lastName;
-			dataPath = settings.lastPath;
-			checkBox2.Checked = settings.reF;
-			checkBox1.Checked = settings.f16f;
-			numericUpDown4.Value =(decimal) settings.r2;
-			textBox1.Text = settings.f16;
-			MoveHelper.sleepTime = settings.sleepTime;
-			AngleControl.max = settings.max;
+				if (settings.load("settings.data"))
+				{
+					comboBox3.Text = settings.lastName;
+					textBox3.Text = settings.f16code;
+					manager.name = settings.lastName;
+					dataPath = settings.lastPath;
+					checkBox2.Checked = settings.reF;
+					checkBox1.Checked = settings.f16f;
+					numericUpDown4.Value = (decimal)settings.r2;
+					textBox1.Text = settings.f16;
+					MoveHelper.sleepTime = settings.sleepTime;
+					AngleControl.max = settings.max;
 				}
 			}
-		
+
 			catch { }
-		
+
 		}
 		private void button6_Click(object sender, EventArgs e)
 		{
 			lastSelectDataset = -1;
 
-			if (File.Exists(dataPath+"\\" + manager.name + ".data"))
+			if (File.Exists(dataPath + "\\" + manager.name + ".data"))
 			{
 				manager.load(dataPath + "\\" + manager.name + ".data");
 				updateCombo1();
@@ -1201,6 +1202,7 @@ try
 
 		public void onDataUpdate(short[] d)
 		{
+			DataConverter c = converter != null ? converter : d => d*0.3051804379;
 			var m = managerM.Run(textBox1.Text);
 			double sum = 0;
 			int n = 0;
@@ -1208,7 +1210,7 @@ try
 			{
 				if (m.getValue(i) > 0)
 				{
-					sum += Math.Atan(d[i] / 65535.0 / 30) * 1000000;
+					sum +=c(d[i]) ;
 					n++;
 				}
 			}
@@ -1255,6 +1257,11 @@ try
 			{
 				dataPath = folderDialog.SelectedPath;
 			}
+
+		}
+
+		private void label13_Click(object sender, EventArgs e)
+		{
 
 		}
 	}
