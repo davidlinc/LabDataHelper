@@ -78,6 +78,12 @@
 			button15 = new Button();
 			openFileDialog1 = new OpenFileDialog();
 			label14 = new Label();
+			button16 = new Button();
+			button17 = new Button();
+			button18 = new Button();
+			button19 = new Button();
+			button20 = new Button();
+			button21 = new Button();
 			((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown2).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown3).BeginInit();
@@ -200,6 +206,7 @@
 			label1.Size = new Size(86, 31);
 			label1.TabIndex = 14;
 			label1.Text = "数据组";
+			label1.Click += label1_Click;
 			// 
 			// label2
 			// 
@@ -230,6 +237,7 @@
 			label4.Size = new Size(86, 31);
 			label4.TabIndex = 16;
 			label4.Text = "数据包";
+			label4.Click += label4_Click;
 			// 
 			// button8
 			// 
@@ -497,7 +505,7 @@
 			// 
 			// button13
 			// 
-			button13.Location = new Point(498, 781);
+			button13.Location = new Point(496, 648);
 			button13.Margin = new Padding(4);
 			button13.Name = "button13";
 			button13.Size = new Size(168, 46);
@@ -509,7 +517,7 @@
 			// label11
 			// 
 			label11.AutoSize = true;
-			label11.Location = new Point(675, 790);
+			label11.Location = new Point(673, 657);
 			label11.Margin = new Padding(4, 0, 4, 0);
 			label11.Name = "label11";
 			label11.Size = new Size(86, 31);
@@ -519,7 +527,7 @@
 			// 
 			// button14
 			// 
-			button14.Location = new Point(498, 865);
+			button14.Location = new Point(496, 732);
 			button14.Margin = new Padding(4);
 			button14.Name = "button14";
 			button14.Size = new Size(168, 46);
@@ -531,7 +539,7 @@
 			// label12
 			// 
 			label12.AutoSize = true;
-			label12.Location = new Point(675, 872);
+			label12.Location = new Point(673, 739);
 			label12.Margin = new Padding(4, 0, 4, 0);
 			label12.Name = "label12";
 			label12.Size = new Size(86, 31);
@@ -542,12 +550,13 @@
 			// label13
 			// 
 			label13.AutoSize = true;
-			label13.Location = new Point(500, 915);
+			label13.Location = new Point(498, 782);
 			label13.Margin = new Padding(4, 0, 4, 0);
 			label13.Name = "label13";
 			label13.Size = new Size(86, 31);
 			label13.TabIndex = 50;
 			label13.Text = "未连接";
+			label13.Click += label13_Click;
 			// 
 			// pictureBox1
 			// 
@@ -564,6 +573,7 @@
 			pictureBox2.Location = new Point(1780, 102);
 			pictureBox2.Name = "pictureBox2";
 			pictureBox2.Size = new Size(40, 40);
+			pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
 			pictureBox2.TabIndex = 52;
 			pictureBox2.TabStop = false;
 			pictureBox2.Click += pictureBox2_Click;
@@ -592,11 +602,83 @@
 			label14.Size = new Size(0, 31);
 			label14.TabIndex = 54;
 			// 
+			// button16
+			// 
+			button16.Location = new Point(495, 851);
+			button16.Margin = new Padding(4);
+			button16.Name = "button16";
+			button16.Size = new Size(143, 46);
+			button16.TabIndex = 55;
+			button16.Text = "归零正";
+			button16.UseVisualStyleBackColor = true;
+			button16.Click += button16_Click;
+			// 
+			// button17
+			// 
+			button17.Location = new Point(495, 905);
+			button17.Margin = new Padding(4);
+			button17.Name = "button17";
+			button17.Size = new Size(143, 46);
+			button17.TabIndex = 56;
+			button17.Text = "归零负";
+			button17.UseVisualStyleBackColor = true;
+			button17.Click += button17_Click;
+			// 
+			// button18
+			// 
+			button18.Location = new Point(495, 959);
+			button18.Margin = new Padding(4);
+			button18.Name = "button18";
+			button18.Size = new Size(143, 46);
+			button18.TabIndex = 57;
+			button18.Text = "对齐数据";
+			button18.UseVisualStyleBackColor = true;
+			button18.Click += button18_Click;
+			// 
+			// button19
+			// 
+			button19.Location = new Point(649, 959);
+			button19.Margin = new Padding(4);
+			button19.Name = "button19";
+			button19.Size = new Size(143, 46);
+			button19.TabIndex = 58;
+			button19.Text = "标定";
+			button19.UseVisualStyleBackColor = true;
+			button19.Click += button19_Click;
+			// 
+			// button20
+			// 
+			button20.Location = new Point(649, 851);
+			button20.Margin = new Padding(4);
+			button20.Name = "button20";
+			button20.Size = new Size(143, 46);
+			button20.TabIndex = 59;
+			button20.Text = "运行正";
+			button20.UseVisualStyleBackColor = true;
+			button20.Click += button20_Click;
+			// 
+			// button21
+			// 
+			button21.Location = new Point(649, 905);
+			button21.Margin = new Padding(4);
+			button21.Name = "button21";
+			button21.Size = new Size(143, 46);
+			button21.TabIndex = 60;
+			button21.Text = "运行负";
+			button21.UseVisualStyleBackColor = true;
+			button21.Click += button21_Click;
+			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(14F, 31F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(1887, 977);
+			ClientSize = new Size(1887, 1099);
+			Controls.Add(button21);
+			Controls.Add(button20);
+			Controls.Add(button19);
+			Controls.Add(button18);
+			Controls.Add(button17);
+			Controls.Add(button16);
 			Controls.Add(label14);
 			Controls.Add(button15);
 			Controls.Add(pictureBox2);
@@ -710,5 +792,11 @@
 		private Button button15;
 		private OpenFileDialog openFileDialog1;
 		private Label label14;
+		private Button button16;
+		private Button button17;
+		private Button button18;
+		private Button button19;
+		private Button button20;
+		private Button button21;
 	}
 }
