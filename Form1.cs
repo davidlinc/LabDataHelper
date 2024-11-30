@@ -620,6 +620,20 @@ namespace LabDataHelper
 			manager.describe = richTextBox1.Text;
 		}
 
+		public string replace(string s, string start, string endC, string toreplace)
+		{
+			s = s.Replace(" ", "");
+			var p = s.findString(start);
+			if (p.Count > 0)
+			{
+				int pos = p.First();
+				var v = s.AsSpan(pos + 5);
+				int end = v.findFirstString(endC);
+				s = s.Substring(0, pos) + toreplace + s.Substring(end + pos + 5 + 1);
+
+			}
+			return s;
+		}
 		void readDescribe(string s)
 		{
 
@@ -1266,6 +1280,8 @@ namespace LabDataHelper
 
 		}
 
+
+
 		private void label13_Click(object sender, EventArgs e)
 		{
 
@@ -1309,6 +1325,19 @@ namespace LabDataHelper
 		private void button21_Click(object sender, EventArgs e)
 		{
 			managerM.Run("mar(-0.08,56)").getValue(1);
+		}
+
+		private void button22_Click(object sender, EventArgs e)
+		{
+			richTextBox1.Text = replace(richTextBox1.Text, "data=", ";", "data=lf(x);");
+			managerM.clear();
+			registerFunc();
+			readDescribe(manager.describe);
+		}
+
+		private void button23_Click(object sender, EventArgs e)
+		{
+			managerM.Run("lfclear").getValue(1);
 		}
 	}
 }

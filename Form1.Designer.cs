@@ -84,6 +84,8 @@
 			button19 = new Button();
 			button20 = new Button();
 			button21 = new Button();
+			button22 = new Button();
+			button23 = new Button();
 			((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown2).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDown3).BeginInit();
@@ -94,10 +96,10 @@
 			// 
 			// richTextBox1
 			// 
-			richTextBox1.Location = new Point(104, 98);
-			richTextBox1.Margin = new Padding(4);
+			richTextBox1.Location = new Point(52, 54);
+			richTextBox1.Margin = new Padding(2);
 			richTextBox1.Name = "richTextBox1";
-			richTextBox1.Size = new Size(278, 286);
+			richTextBox1.Size = new Size(141, 159);
 			richTextBox1.TabIndex = 1;
 			richTextBox1.Text = "";
 			richTextBox1.TextChanged += richTextBox1_TextChanged;
@@ -105,28 +107,28 @@
 			// comboBox1
 			// 
 			comboBox1.FormattingEnabled = true;
-			comboBox1.Location = new Point(500, 44);
-			comboBox1.Margin = new Padding(4);
+			comboBox1.Location = new Point(250, 24);
+			comboBox1.Margin = new Padding(2);
 			comboBox1.Name = "comboBox1";
-			comboBox1.Size = new Size(288, 39);
+			comboBox1.Size = new Size(146, 25);
 			comboBox1.TabIndex = 2;
 			comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
 			// 
 			// textBox2
 			// 
-			textBox2.Location = new Point(498, 502);
-			textBox2.Margin = new Padding(4);
+			textBox2.Location = new Point(249, 275);
+			textBox2.Margin = new Padding(2);
 			textBox2.Name = "textBox2";
-			textBox2.Size = new Size(294, 38);
+			textBox2.Size = new Size(149, 23);
 			textBox2.TabIndex = 3;
 			textBox2.TextChanged += textBox2_TextChanged;
 			// 
 			// button1
 			// 
-			button1.Location = new Point(653, 547);
-			button1.Margin = new Padding(4);
+			button1.Location = new Point(326, 300);
+			button1.Margin = new Padding(2);
 			button1.Name = "button1";
-			button1.Size = new Size(143, 46);
+			button1.Size = new Size(72, 25);
 			button1.TabIndex = 4;
 			button1.Text = "添加数据";
 			button1.UseVisualStyleBackColor = true;
@@ -134,31 +136,31 @@
 			// 
 			// richTextBox2
 			// 
-			richTextBox2.Location = new Point(500, 99);
-			richTextBox2.Margin = new Padding(4);
+			richTextBox2.Location = new Point(250, 54);
+			richTextBox2.Margin = new Padding(2);
 			richTextBox2.Name = "richTextBox2";
-			richTextBox2.Size = new Size(288, 286);
+			richTextBox2.Size = new Size(146, 159);
 			richTextBox2.TabIndex = 6;
 			richTextBox2.Text = "";
 			richTextBox2.TextChanged += richTextBox2_TextChanged;
 			// 
 			// richTextBox3
 			// 
-			richTextBox3.Location = new Point(892, 102);
-			richTextBox3.Margin = new Padding(4);
+			richTextBox3.Location = new Point(446, 56);
+			richTextBox3.Margin = new Padding(2);
 			richTextBox3.Name = "richTextBox3";
 			richTextBox3.ReadOnly = true;
-			richTextBox3.Size = new Size(928, 643);
+			richTextBox3.Size = new Size(466, 354);
 			richTextBox3.TabIndex = 7;
 			richTextBox3.Text = "";
 			richTextBox3.TextChanged += richTextBox3_TextChanged;
 			// 
 			// button3
 			// 
-			button3.Location = new Point(498, 394);
-			button3.Margin = new Padding(4);
+			button3.Location = new Point(249, 216);
+			button3.Margin = new Padding(2);
 			button3.Name = "button3";
-			button3.Size = new Size(140, 46);
+			button3.Size = new Size(70, 25);
 			button3.TabIndex = 9;
 			button3.Text = "添加";
 			button3.UseVisualStyleBackColor = true;
@@ -166,10 +168,10 @@
 			// 
 			// button5
 			// 
-			button5.Location = new Point(22, 394);
-			button5.Margin = new Padding(4);
+			button5.Location = new Point(11, 216);
+			button5.Margin = new Padding(2);
 			button5.Name = "button5";
-			button5.Size = new Size(116, 46);
+			button5.Size = new Size(58, 25);
 			button5.TabIndex = 11;
 			button5.Text = "保存";
 			button5.UseVisualStyleBackColor = true;
@@ -177,10 +179,10 @@
 			// 
 			// button6
 			// 
-			button6.Location = new Point(146, 394);
-			button6.Margin = new Padding(4);
+			button6.Location = new Point(73, 216);
+			button6.Margin = new Padding(2);
 			button6.Name = "button6";
-			button6.Size = new Size(116, 46);
+			button6.Size = new Size(58, 25);
 			button6.TabIndex = 12;
 			button6.Text = "加载";
 			button6.UseVisualStyleBackColor = true;
@@ -188,10 +190,10 @@
 			// 
 			// button7
 			// 
-			button7.Location = new Point(270, 394);
-			button7.Margin = new Padding(4);
+			button7.Location = new Point(135, 216);
+			button7.Margin = new Padding(2);
 			button7.Name = "button7";
-			button7.Size = new Size(116, 46);
+			button7.Size = new Size(58, 25);
 			button7.TabIndex = 13;
 			button7.Text = "清空";
 			button7.UseVisualStyleBackColor = true;
@@ -200,10 +202,10 @@
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new Point(406, 40);
-			label1.Margin = new Padding(4, 0, 4, 0);
+			label1.Location = new Point(203, 22);
+			label1.Margin = new Padding(2, 0, 2, 0);
 			label1.Name = "label1";
-			label1.Size = new Size(86, 31);
+			label1.Size = new Size(44, 17);
 			label1.TabIndex = 14;
 			label1.Text = "数据组";
 			label1.Click += label1_Click;
@@ -211,40 +213,40 @@
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new Point(406, 102);
-			label2.Margin = new Padding(4, 0, 4, 0);
+			label2.Location = new Point(203, 56);
+			label2.Margin = new Padding(2, 0, 2, 0);
 			label2.Name = "label2";
-			label2.Size = new Size(62, 31);
+			label2.Size = new Size(32, 17);
 			label2.TabIndex = 15;
 			label2.Text = "描述";
 			// 
 			// label3
 			// 
 			label3.AutoSize = true;
-			label3.Location = new Point(11, 102);
-			label3.Margin = new Padding(4, 0, 4, 0);
+			label3.Location = new Point(6, 56);
+			label3.Margin = new Padding(2, 0, 2, 0);
 			label3.Name = "label3";
-			label3.Size = new Size(62, 31);
+			label3.Size = new Size(32, 17);
 			label3.TabIndex = 17;
 			label3.Text = "描述";
 			// 
 			// label4
 			// 
 			label4.AutoSize = true;
-			label4.Location = new Point(11, 40);
-			label4.Margin = new Padding(4, 0, 4, 0);
+			label4.Location = new Point(6, 22);
+			label4.Margin = new Padding(2, 0, 2, 0);
 			label4.Name = "label4";
-			label4.Size = new Size(86, 31);
+			label4.Size = new Size(44, 17);
 			label4.TabIndex = 16;
 			label4.Text = "数据包";
 			label4.Click += label4_Click;
 			// 
 			// button8
 			// 
-			button8.Location = new Point(647, 394);
-			button8.Margin = new Padding(4);
+			button8.Location = new Point(324, 216);
+			button8.Margin = new Padding(2);
 			button8.Name = "button8";
-			button8.Size = new Size(146, 46);
+			button8.Size = new Size(73, 25);
 			button8.TabIndex = 18;
 			button8.Text = "移除";
 			button8.UseVisualStyleBackColor = true;
@@ -252,10 +254,10 @@
 			// 
 			// button9
 			// 
-			button9.Location = new Point(496, 547);
-			button9.Margin = new Padding(4);
+			button9.Location = new Point(248, 300);
+			button9.Margin = new Padding(2);
 			button9.Name = "button9";
-			button9.Size = new Size(143, 46);
+			button9.Size = new Size(72, 25);
 			button9.TabIndex = 19;
 			button9.Text = "运行";
 			button9.UseVisualStyleBackColor = true;
@@ -263,10 +265,10 @@
 			// 
 			// richTextBox4
 			// 
-			richTextBox4.Location = new Point(22, 502);
-			richTextBox4.Margin = new Padding(4);
+			richTextBox4.Location = new Point(11, 275);
+			richTextBox4.Margin = new Padding(2);
 			richTextBox4.Name = "richTextBox4";
-			richTextBox4.Size = new Size(376, 174);
+			richTextBox4.Size = new Size(190, 97);
 			richTextBox4.TabIndex = 20;
 			richTextBox4.Text = "";
 			richTextBox4.TextChanged += richTextBox4_TextChanged;
@@ -274,19 +276,19 @@
 			// comboBox3
 			// 
 			comboBox3.FormattingEnabled = true;
-			comboBox3.Location = new Point(104, 44);
-			comboBox3.Margin = new Padding(4);
+			comboBox3.Location = new Point(52, 24);
+			comboBox3.Margin = new Padding(2);
 			comboBox3.Name = "comboBox3";
-			comboBox3.Size = new Size(231, 39);
+			comboBox3.Size = new Size(118, 25);
 			comboBox3.TabIndex = 21;
 			comboBox3.SelectedIndexChanged += comboBox3_SelectedIndexChanged;
 			// 
 			// button10
 			// 
-			button10.Location = new Point(172, 686);
-			button10.Margin = new Padding(4);
+			button10.Location = new Point(86, 376);
+			button10.Margin = new Padding(2);
 			button10.Name = "button10";
-			button10.Size = new Size(151, 46);
+			button10.Size = new Size(76, 25);
 			button10.TabIndex = 22;
 			button10.Text = "16进制转换";
 			button10.UseVisualStyleBackColor = true;
@@ -294,21 +296,21 @@
 			// 
 			// numericUpDown1
 			// 
-			numericUpDown1.Location = new Point(277, 781);
-			numericUpDown1.Margin = new Padding(4);
+			numericUpDown1.Location = new Point(138, 428);
+			numericUpDown1.Margin = new Padding(2);
 			numericUpDown1.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
 			numericUpDown1.Name = "numericUpDown1";
-			numericUpDown1.Size = new Size(104, 38);
+			numericUpDown1.Size = new Size(52, 23);
 			numericUpDown1.TabIndex = 23;
 			numericUpDown1.Value = new decimal(new int[] { 15, 0, 0, 0 });
 			// 
 			// label5
 			// 
 			label5.AutoSize = true;
-			label5.Location = new Point(206, 787);
-			label5.Margin = new Padding(4, 0, 4, 0);
+			label5.Location = new Point(103, 432);
+			label5.Margin = new Padding(2, 0, 2, 0);
 			label5.Name = "label5";
-			label5.Size = new Size(62, 31);
+			label5.Size = new Size(32, 17);
 			label5.TabIndex = 24;
 			label5.Text = "长度";
 			label5.Click += label5_Click;
@@ -316,28 +318,28 @@
 			// label6
 			// 
 			label6.AutoSize = true;
-			label6.Location = new Point(20, 787);
-			label6.Margin = new Padding(4, 0, 4, 0);
+			label6.Location = new Point(10, 432);
+			label6.Margin = new Padding(2, 0, 2, 0);
 			label6.Name = "label6";
-			label6.Size = new Size(62, 31);
+			label6.Size = new Size(32, 17);
 			label6.TabIndex = 26;
 			label6.Text = "偏移";
 			// 
 			// numericUpDown2
 			// 
-			numericUpDown2.Location = new Point(92, 781);
-			numericUpDown2.Margin = new Padding(4);
+			numericUpDown2.Location = new Point(46, 428);
+			numericUpDown2.Margin = new Padding(2);
 			numericUpDown2.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
 			numericUpDown2.Name = "numericUpDown2";
-			numericUpDown2.Size = new Size(104, 38);
+			numericUpDown2.Size = new Size(52, 23);
 			numericUpDown2.TabIndex = 25;
 			// 
 			// button11
 			// 
-			button11.Location = new Point(22, 450);
-			button11.Margin = new Padding(4);
+			button11.Location = new Point(11, 247);
+			button11.Margin = new Padding(2);
 			button11.Name = "button11";
-			button11.Size = new Size(151, 46);
+			button11.Size = new Size(76, 25);
 			button11.TabIndex = 27;
 			button11.Text = "导出为Excel";
 			button11.UseVisualStyleBackColor = true;
@@ -346,39 +348,39 @@
 			// comboBox4
 			// 
 			comboBox4.FormattingEnabled = true;
-			comboBox4.Location = new Point(1012, 40);
-			comboBox4.Margin = new Padding(4);
+			comboBox4.Location = new Point(506, 22);
+			comboBox4.Margin = new Padding(2);
 			comboBox4.Name = "comboBox4";
-			comboBox4.Size = new Size(260, 39);
+			comboBox4.Size = new Size(132, 25);
 			comboBox4.TabIndex = 29;
 			comboBox4.SelectedIndexChanged += comboBox4_SelectedIndexChanged;
 			// 
 			// label8
 			// 
 			label8.AutoSize = true;
-			label8.Location = new Point(868, 40);
-			label8.Margin = new Padding(4, 0, 4, 0);
+			label8.Location = new Point(434, 22);
+			label8.Margin = new Padding(2, 0, 2, 0);
 			label8.Name = "label8";
-			label8.Size = new Size(134, 31);
+			label8.Size = new Size(68, 17);
 			label8.TabIndex = 30;
 			label8.Text = "基准数据组";
 			// 
 			// label7
 			// 
 			label7.AutoSize = true;
-			label7.Location = new Point(892, 779);
-			label7.Margin = new Padding(4, 0, 4, 0);
+			label7.Location = new Point(446, 427);
+			label7.Margin = new Padding(2, 0, 2, 0);
 			label7.Name = "label7";
-			label7.Size = new Size(38, 31);
+			label7.Size = new Size(20, 17);
 			label7.TabIndex = 35;
 			label7.Text = "值";
 			// 
 			// button4
 			// 
-			button4.Location = new Point(1092, 828);
-			button4.Margin = new Padding(4);
+			button4.Location = new Point(546, 454);
+			button4.Margin = new Padding(2);
 			button4.Name = "button4";
-			button4.Size = new Size(146, 46);
+			button4.Size = new Size(73, 25);
 			button4.TabIndex = 34;
 			button4.Text = "删除";
 			button4.UseVisualStyleBackColor = true;
@@ -387,18 +389,18 @@
 			// comboBox2
 			// 
 			comboBox2.FormattingEnabled = true;
-			comboBox2.Location = new Point(935, 779);
-			comboBox2.Margin = new Padding(4);
+			comboBox2.Location = new Point(468, 427);
+			comboBox2.Margin = new Padding(2);
 			comboBox2.Name = "comboBox2";
-			comboBox2.Size = new Size(304, 39);
+			comboBox2.Size = new Size(154, 25);
 			comboBox2.TabIndex = 33;
 			// 
 			// button2
 			// 
-			button2.Location = new Point(935, 828);
-			button2.Margin = new Padding(4);
+			button2.Location = new Point(468, 454);
+			button2.Margin = new Padding(2);
 			button2.Name = "button2";
-			button2.Size = new Size(146, 46);
+			button2.Size = new Size(73, 25);
 			button2.TabIndex = 32;
 			button2.Text = "修改";
 			button2.UseVisualStyleBackColor = true;
@@ -406,10 +408,10 @@
 			// 
 			// textBox1
 			// 
-			textBox1.Location = new Point(20, 738);
-			textBox1.Margin = new Padding(4);
+			textBox1.Location = new Point(10, 405);
+			textBox1.Margin = new Padding(2);
 			textBox1.Name = "textBox1";
-			textBox1.Size = new Size(376, 38);
+			textBox1.Size = new Size(190, 23);
 			textBox1.TabIndex = 36;
 			textBox1.Text = "1-x%2";
 			textBox1.TextChanged += textBox1_TextChanged_1;
@@ -419,10 +421,10 @@
 			checkBox1.AutoSize = true;
 			checkBox1.Checked = true;
 			checkBox1.CheckState = CheckState.Checked;
-			checkBox1.Location = new Point(22, 694);
-			checkBox1.Margin = new Padding(4);
+			checkBox1.Location = new Point(11, 381);
+			checkBox1.Margin = new Padding(2);
 			checkBox1.Name = "checkBox1";
-			checkBox1.Size = new Size(142, 35);
+			checkBox1.Size = new Size(75, 21);
 			checkBox1.TabIndex = 38;
 			checkBox1.Text = "筛选规则";
 			checkBox1.UseVisualStyleBackColor = true;
@@ -430,20 +432,20 @@
 			// 
 			// textBox3
 			// 
-			textBox3.Location = new Point(332, 691);
-			textBox3.Margin = new Padding(4);
+			textBox3.Location = new Point(166, 379);
+			textBox3.Margin = new Padding(2);
 			textBox3.Name = "textBox3";
-			textBox3.Size = new Size(64, 38);
+			textBox3.Size = new Size(34, 23);
 			textBox3.TabIndex = 39;
 			textBox3.Text = "0123";
 			textBox3.TextChanged += textBox3_TextChanged;
 			// 
 			// button12
 			// 
-			button12.Location = new Point(1285, 35);
-			button12.Margin = new Padding(4);
+			button12.Location = new Point(642, 19);
+			button12.Margin = new Padding(2);
 			button12.Name = "button12";
-			button12.Size = new Size(150, 46);
+			button12.Size = new Size(75, 25);
 			button12.TabIndex = 40;
 			button12.Text = "分析";
 			button12.UseVisualStyleBackColor = true;
@@ -451,19 +453,19 @@
 			// 
 			// numericUpDown3
 			// 
-			numericUpDown3.Location = new Point(92, 828);
-			numericUpDown3.Margin = new Padding(4);
+			numericUpDown3.Location = new Point(46, 454);
+			numericUpDown3.Margin = new Padding(2);
 			numericUpDown3.Name = "numericUpDown3";
-			numericUpDown3.Size = new Size(104, 38);
+			numericUpDown3.Size = new Size(52, 23);
 			numericUpDown3.TabIndex = 41;
 			// 
 			// label9
 			// 
 			label9.AutoSize = true;
-			label9.Location = new Point(20, 831);
-			label9.Margin = new Padding(4, 0, 4, 0);
+			label9.Location = new Point(10, 456);
+			label9.Margin = new Padding(2, 0, 2, 0);
 			label9.Name = "label9";
-			label9.Size = new Size(62, 31);
+			label9.Size = new Size(32, 17);
 			label9.TabIndex = 42;
 			label9.Text = "优化";
 			// 
@@ -472,10 +474,10 @@
 			checkBox2.AutoSize = true;
 			checkBox2.Checked = true;
 			checkBox2.CheckState = CheckState.Checked;
-			checkBox2.Location = new Point(388, 235);
-			checkBox2.Margin = new Padding(4);
+			checkBox2.Location = new Point(194, 129);
+			checkBox2.Margin = new Padding(2);
 			checkBox2.Name = "checkBox2";
-			checkBox2.Size = new Size(94, 66);
+			checkBox2.Size = new Size(51, 38);
 			checkBox2.TabIndex = 43;
 			checkBox2.Text = "作为\r\n参考";
 			checkBox2.UseVisualStyleBackColor = true;
@@ -485,10 +487,10 @@
 			// 
 			numericUpDown4.DecimalPlaces = 3;
 			numericUpDown4.Increment = new decimal(new int[] { 1, 0, 0, 196608 });
-			numericUpDown4.Location = new Point(388, 189);
-			numericUpDown4.Margin = new Padding(4);
+			numericUpDown4.Location = new Point(194, 104);
+			numericUpDown4.Margin = new Padding(2);
 			numericUpDown4.Name = "numericUpDown4";
-			numericUpDown4.Size = new Size(104, 38);
+			numericUpDown4.Size = new Size(52, 23);
 			numericUpDown4.TabIndex = 44;
 			numericUpDown4.Value = new decimal(new int[] { 999, 0, 0, 196608 });
 			numericUpDown4.ValueChanged += numericUpDown4_ValueChanged;
@@ -496,19 +498,19 @@
 			// label10
 			// 
 			label10.AutoSize = true;
-			label10.Location = new Point(388, 152);
-			label10.Margin = new Padding(4, 0, 4, 0);
+			label10.Location = new Point(194, 83);
+			label10.Margin = new Padding(2, 0, 2, 0);
 			label10.Name = "label10";
-			label10.Size = new Size(92, 31);
+			label10.Size = new Size(47, 17);
 			label10.TabIndex = 45;
 			label10.Text = "R2阈值";
 			// 
 			// button13
 			// 
-			button13.Location = new Point(496, 648);
-			button13.Margin = new Padding(4);
+			button13.Location = new Point(248, 355);
+			button13.Margin = new Padding(2);
 			button13.Name = "button13";
-			button13.Size = new Size(168, 46);
+			button13.Size = new Size(84, 25);
 			button13.TabIndex = 46;
 			button13.Text = "连接位移台";
 			button13.UseVisualStyleBackColor = true;
@@ -517,20 +519,20 @@
 			// label11
 			// 
 			label11.AutoSize = true;
-			label11.Location = new Point(673, 657);
-			label11.Margin = new Padding(4, 0, 4, 0);
+			label11.Location = new Point(336, 360);
+			label11.Margin = new Padding(2, 0, 2, 0);
 			label11.Name = "label11";
-			label11.Size = new Size(86, 31);
+			label11.Size = new Size(44, 17);
 			label11.TabIndex = 47;
 			label11.Text = "未连接";
 			label11.Click += label11_Click;
 			// 
 			// button14
 			// 
-			button14.Location = new Point(496, 732);
-			button14.Margin = new Padding(4);
+			button14.Location = new Point(248, 401);
+			button14.Margin = new Padding(2);
 			button14.Name = "button14";
-			button14.Size = new Size(168, 46);
+			button14.Size = new Size(84, 25);
 			button14.TabIndex = 48;
 			button14.Text = "连接Psd";
 			button14.UseVisualStyleBackColor = true;
@@ -539,10 +541,10 @@
 			// label12
 			// 
 			label12.AutoSize = true;
-			label12.Location = new Point(673, 739);
-			label12.Margin = new Padding(4, 0, 4, 0);
+			label12.Location = new Point(336, 405);
+			label12.Margin = new Padding(2, 0, 2, 0);
 			label12.Name = "label12";
-			label12.Size = new Size(86, 31);
+			label12.Size = new Size(44, 17);
 			label12.TabIndex = 49;
 			label12.Text = "未连接";
 			label12.Click += label12_Click;
@@ -550,19 +552,20 @@
 			// label13
 			// 
 			label13.AutoSize = true;
-			label13.Location = new Point(498, 782);
-			label13.Margin = new Padding(4, 0, 4, 0);
+			label13.Location = new Point(249, 429);
+			label13.Margin = new Padding(2, 0, 2, 0);
 			label13.Name = "label13";
-			label13.Size = new Size(86, 31);
+			label13.Size = new Size(44, 17);
 			label13.TabIndex = 50;
 			label13.Text = "未连接";
 			label13.Click += label13_Click;
 			// 
 			// pictureBox1
 			// 
-			pictureBox1.Location = new Point(892, 102);
+			pictureBox1.Location = new Point(446, 56);
+			pictureBox1.Margin = new Padding(2);
 			pictureBox1.Name = "pictureBox1";
-			pictureBox1.Size = new Size(928, 643);
+			pictureBox1.Size = new Size(464, 353);
 			pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
 			pictureBox1.TabIndex = 51;
 			pictureBox1.TabStop = false;
@@ -570,9 +573,10 @@
 			// 
 			// pictureBox2
 			// 
-			pictureBox2.Location = new Point(1780, 102);
+			pictureBox2.Location = new Point(890, 56);
+			pictureBox2.Margin = new Padding(2);
 			pictureBox2.Name = "pictureBox2";
-			pictureBox2.Size = new Size(40, 40);
+			pictureBox2.Size = new Size(20, 22);
 			pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
 			pictureBox2.TabIndex = 52;
 			pictureBox2.TabStop = false;
@@ -580,10 +584,10 @@
 			// 
 			// button15
 			// 
-			button15.Location = new Point(336, 44);
-			button15.Margin = new Padding(4);
+			button15.Location = new Point(168, 24);
+			button15.Margin = new Padding(2);
 			button15.Name = "button15";
-			button15.Size = new Size(45, 39);
+			button15.Size = new Size(22, 21);
 			button15.TabIndex = 53;
 			button15.Text = "...";
 			button15.UseVisualStyleBackColor = true;
@@ -596,18 +600,18 @@
 			// label14
 			// 
 			label14.AutoSize = true;
-			label14.Location = new Point(500, 458);
-			label14.Margin = new Padding(4, 0, 4, 0);
+			label14.Location = new Point(250, 251);
+			label14.Margin = new Padding(2, 0, 2, 0);
 			label14.Name = "label14";
-			label14.Size = new Size(0, 31);
+			label14.Size = new Size(0, 17);
 			label14.TabIndex = 54;
 			// 
 			// button16
 			// 
-			button16.Location = new Point(495, 851);
-			button16.Margin = new Padding(4);
+			button16.Location = new Point(248, 467);
+			button16.Margin = new Padding(2);
 			button16.Name = "button16";
-			button16.Size = new Size(143, 46);
+			button16.Size = new Size(72, 25);
 			button16.TabIndex = 55;
 			button16.Text = "归零正";
 			button16.UseVisualStyleBackColor = true;
@@ -615,10 +619,10 @@
 			// 
 			// button17
 			// 
-			button17.Location = new Point(495, 905);
-			button17.Margin = new Padding(4);
+			button17.Location = new Point(248, 496);
+			button17.Margin = new Padding(2);
 			button17.Name = "button17";
-			button17.Size = new Size(143, 46);
+			button17.Size = new Size(72, 25);
 			button17.TabIndex = 56;
 			button17.Text = "归零负";
 			button17.UseVisualStyleBackColor = true;
@@ -626,10 +630,10 @@
 			// 
 			// button18
 			// 
-			button18.Location = new Point(495, 959);
-			button18.Margin = new Padding(4);
+			button18.Location = new Point(248, 526);
+			button18.Margin = new Padding(2);
 			button18.Name = "button18";
-			button18.Size = new Size(143, 46);
+			button18.Size = new Size(72, 25);
 			button18.TabIndex = 57;
 			button18.Text = "对齐数据";
 			button18.UseVisualStyleBackColor = true;
@@ -637,10 +641,10 @@
 			// 
 			// button19
 			// 
-			button19.Location = new Point(649, 959);
-			button19.Margin = new Padding(4);
+			button19.Location = new Point(324, 526);
+			button19.Margin = new Padding(2);
 			button19.Name = "button19";
-			button19.Size = new Size(143, 46);
+			button19.Size = new Size(72, 25);
 			button19.TabIndex = 58;
 			button19.Text = "标定";
 			button19.UseVisualStyleBackColor = true;
@@ -648,10 +652,10 @@
 			// 
 			// button20
 			// 
-			button20.Location = new Point(649, 851);
-			button20.Margin = new Padding(4);
+			button20.Location = new Point(324, 467);
+			button20.Margin = new Padding(2);
 			button20.Name = "button20";
-			button20.Size = new Size(143, 46);
+			button20.Size = new Size(72, 25);
 			button20.TabIndex = 59;
 			button20.Text = "运行正";
 			button20.UseVisualStyleBackColor = true;
@@ -659,20 +663,44 @@
 			// 
 			// button21
 			// 
-			button21.Location = new Point(649, 905);
-			button21.Margin = new Padding(4);
+			button21.Location = new Point(324, 496);
+			button21.Margin = new Padding(2);
 			button21.Name = "button21";
-			button21.Size = new Size(143, 46);
+			button21.Size = new Size(72, 25);
 			button21.TabIndex = 60;
 			button21.Text = "运行负";
 			button21.UseVisualStyleBackColor = true;
 			button21.Click += button21_Click;
 			// 
+			// button22
+			// 
+			button22.Location = new Point(248, 555);
+			button22.Margin = new Padding(2);
+			button22.Name = "button22";
+			button22.Size = new Size(72, 25);
+			button22.TabIndex = 61;
+			button22.Text = "应用标定";
+			button22.UseVisualStyleBackColor = true;
+			button22.Click += button22_Click;
+			// 
+			// button23
+			// 
+			button23.Location = new Point(324, 555);
+			button23.Margin = new Padding(2);
+			button23.Name = "button23";
+			button23.Size = new Size(72, 25);
+			button23.TabIndex = 62;
+			button23.Text = "清空缓存";
+			button23.UseVisualStyleBackColor = true;
+			button23.Click += button23_Click;
+			// 
 			// Form1
 			// 
-			AutoScaleDimensions = new SizeF(14F, 31F);
+			AutoScaleDimensions = new SizeF(7F, 17F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(1887, 1099);
+			ClientSize = new Size(944, 676);
+			Controls.Add(button23);
+			Controls.Add(button22);
 			Controls.Add(button21);
 			Controls.Add(button20);
 			Controls.Add(button19);
@@ -727,7 +755,7 @@
 			Controls.Add(textBox2);
 			Controls.Add(comboBox1);
 			Controls.Add(richTextBox1);
-			Margin = new Padding(4);
+			Margin = new Padding(2);
 			Name = "Form1";
 			Text = "计数宝";
 			Load += Form1_Load;
@@ -798,5 +826,7 @@
 		private Button button19;
 		private Button button20;
 		private Button button21;
+		private Button button22;
+		private Button button23;
 	}
 }
