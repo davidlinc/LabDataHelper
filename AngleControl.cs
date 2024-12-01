@@ -475,6 +475,8 @@ namespace LabDataHelper
 					
 					};
 					double toMoveAngle = dir - angleRealtime;
+					double distance=Math.Abs(toMoveAngle);
+					double absAngle=Math.Abs(angleRealtime);
 					double toMoveFull = angle2pos(toMoveAngle);
 					//DVOS.writeLine("实际角度:" + angleRealtime + " 移动角度:" + toMoveAngle);
 
@@ -498,7 +500,16 @@ namespace LabDataHelper
 					}
 					else
 					{
-						f = 0.6;
+						f = 0.8;
+						if(absAngle<50)
+						{
+							f = 0.6;
+							if(absAngle<25)
+							{
+								f = 0.3;
+							}
+						}
+
 						f = toMoveFull * f;
 
 						//DVOS.writeLine("e2 移动距离:" + f);

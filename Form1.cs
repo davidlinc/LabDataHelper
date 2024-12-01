@@ -21,6 +21,7 @@ namespace LabDataHelper
 	}
 	public partial class Form1 : Form
 	{
+		Buttons buttons = new Buttons();
 		DataManager manager = new DataManager("数据");
 		MathObjectManager managerM = new MathObjectManager();
 		DataConverter converter;
@@ -126,7 +127,12 @@ namespace LabDataHelper
 			if (File.Exists("settings.data"))
 			{
 				loadSettings();
+				updateButtons();
 
+			}
+			else
+			{
+				loadDefaultButtons();
 			}
 			updateInfo();
 
@@ -207,6 +213,31 @@ namespace LabDataHelper
 			{
 				return (this.Text, d => 0);
 			});
+
+
+
+			managerM.regiseterMethod("c1replace", (a, b) =>
+			{
+				richTextBox1.Text = replace(richTextBox1.Text, b[0].Item1, ";", b[1].Item1 + ";");
+				managerM.clear();
+				registerFunc();
+				readDescribe(manager.describe);
+
+				return (this.Text, d => 0);
+			});
+			managerM.regiseterMethod("buttons", (a, b) =>
+			{
+				updateButtons(b[0].Item1);
+
+				return (this.Text, d => 0);
+			});
+			managerM.regiseterMethod("addbutton", (a, b) =>
+			{
+				settings.addButton(b[0].Item1, b[1].Item1);
+				updateButtons();
+
+				return (this.Text, d => 0);
+			});
 			managerM.regiseterMethod("align", (a, b) =>
 			{
 				if (b.Length >= 2)
@@ -285,6 +316,12 @@ namespace LabDataHelper
 			{
 
 				map.Clear();
+				return (null, d => d[0]);
+			});
+			managerM.regiseterMethod("defaultbuttons", (a, b) =>
+			{
+
+				loadDefaultButtons();
 				return (null, d => d[0]);
 			});
 			managerM.regiseterMethod("lfadd", (a, b) =>
@@ -403,6 +440,28 @@ namespace LabDataHelper
 			});
 		}
 
+		void refreshDescribe()
+		{
+			managerM.clear();
+			registerFunc();
+			readDescribe(manager.describe);
+		}
+
+		void updateButtons(string s = null)
+		{
+			if (s != null)
+			{
+				settings.readButtons(s);
+			}
+			buttons.clear();
+			foreach (var v in settings.getButtons())
+			{
+				buttons.addButton(v.Item1, () => managerM.Run(v.Item2).getValue(2));
+			}
+			buttons.setPage(buttons.page);
+			updateButtonName();
+			label15.Text = (buttons.page + 1) + "/" + buttons.maxPage + " 页";
+		}
 		void showImage()
 		{
 			pictureBox1.Show();
@@ -438,6 +497,7 @@ namespace LabDataHelper
 				button9.ForeColor = Color.LightSeaGreen;
 			}
 		}
+
 		void addVisualFx()
 		{
 			//	foreach(var v in contr)
@@ -662,6 +722,8 @@ namespace LabDataHelper
 					managerM.Run(vvv).getValue();
 				}
 			}
+
+
 			p = s.findString("data=");
 			if (p.Count > 0)
 			{
@@ -791,6 +853,8 @@ namespace LabDataHelper
 					}
 
 					line++;
+					sb.AppendLine();
+					line++;
 				}
 
 				richTextBox3.Text = sb.ToString();
@@ -813,7 +877,7 @@ namespace LabDataHelper
 					richTextBox3.SelectionLength = redLength[i];
 					richTextBox3.SelectionColor = Color.Red;
 				}
-				richTextBox3.Select(richTextBox3.Text.Length - 1, 0);
+				richTextBox3.SelectionStart = richTextBox3.Text.Length;
 				richTextBox3.ScrollToCaret();
 			}
 			else
@@ -856,6 +920,8 @@ namespace LabDataHelper
 			comboBox2.SelectedItem = null;
 			comboBox2.Text = "";
 			updateSetInfo(converter, unit);
+			richTextBox3.SelectionStart=richTextBox3.Text.Length;
+			richTextBox3.ScrollToCaret();
 		}
 
 		public void insertRecommend()
@@ -949,6 +1015,8 @@ namespace LabDataHelper
 			settings.r2 = (double)numericUpDown4.Value;
 			settings.save("settings.data");
 		}
+
+
 		void loadSettings()
 		{
 			try
@@ -968,7 +1036,11 @@ namespace LabDataHelper
 				}
 			}
 
-			catch { }
+			catch
+			{
+
+				loadDefaultButtons();
+			}
 
 		}
 		private void button6_Click(object sender, EventArgs e)
@@ -1297,47 +1369,115 @@ namespace LabDataHelper
 		{
 		}
 
+
 		private void button16_Click(object sender, EventArgs e)
 		{
-			this.managerM.Run("peak(25,2)").getValue(1);
+			//this.managerM.Run("peak(25,2)").getValue(1);
+			buttons.onPress(0);
 		}
 
 		private void button17_Click(object sender, EventArgs e)
 		{
-			this.managerM.Run("peak(-25,2)").getValue(1);
+			//this.managerM.Run("peak(-25,2)").getValue(1);
+			buttons.onPress(2);
 		}
 
 		private void button18_Click(object sender, EventArgs e)
 		{
-			this.managerM.Run("align(0,x/2000)").getValue(1);
+			//this.managerM.Run("align(0,x/2000)").getValue(1);
+			buttons.onPress(4);
 		}
 
 		private void button19_Click(object sender, EventArgs e)
 		{
-			this.managerM.Run("lfaddr").getValue(1);
+			//this.managerM.Run("lfaddr").getValue(1);
+			buttons.onPress(5);
 		}
 
 		private void button20_Click(object sender, EventArgs e)
 		{
-			managerM.Run("mar(0.08,56)").getValue(1);
+			//managerM.Run("mar(0.08,56)").getValue(1);
+			buttons.onPress(1);
 		}
 
 		private void button21_Click(object sender, EventArgs e)
 		{
-			managerM.Run("mar(-0.08,56)").getValue(1);
+			//managerM.Run("mar(-0.08,56)").getValue(1);
+			buttons.onPress(3);
 		}
 
 		private void button22_Click(object sender, EventArgs e)
 		{
-			richTextBox1.Text = replace(richTextBox1.Text, "data=", ";", "data=lf(x);");
+			/*richTextBox1.Text = replace(richTextBox1.Text, "data=", ";", "data=lf(x);");
 			managerM.clear();
 			registerFunc();
-			readDescribe(manager.describe);
+			readDescribe(manager.describe);*/
+			buttons.onPress(6);
 		}
 
 		private void button23_Click(object sender, EventArgs e)
 		{
-			managerM.Run("lfclear").getValue(1);
+			//managerM.Run("lfclear").getValue(1);
+			buttons.onPress(7);
+		}
+		void updateButtonName()
+		{
+			button16.Text = buttons.getName(0);
+			button20.Text = buttons.getName(1);
+			button17.Text = buttons.getName(2);
+			button21.Text = buttons.getName(3);
+			button18.Text = buttons.getName(4);
+
+			button19.Text = buttons.getName(5);
+			button22.Text = buttons.getName(6);
+			button23.Text = buttons.getName(7);
+			button24.Text = buttons.getName(8);
+			button25.Text = buttons.getName(9);
+		}
+
+		private void button24_Click(object sender, EventArgs e)
+		{
+			buttons.onPress(8);
+		}
+
+		private void button25_Click(object sender, EventArgs e)
+		{
+			buttons.onPress(9);
+		}
+
+		private void button26_Click(object sender, EventArgs e)
+		{
+			buttons.lastPage();
+			updateButtons();
+		}
+
+		private void button27_Click(object sender, EventArgs e)
+		{
+			buttons.nextPage();
+			updateButtons();
+		}
+
+		void loadDefaultButtons()
+		{
+			updateButtons("归零正:peak(25,2);运行正:mar(0.08,56);归零负:peak(-25,2);运行负:mar(-0.08,56);对齐数据:align(0,x/2000);标定:lfaddr;应用标定:c1replace(data=,data=lf(x));清空缓存:lfclear;");
+		}
+
+		private void button28_Click(object sender, EventArgs e)
+		{
+			using (FormEditButtons e1 = new FormEditButtons(settings.getButtomString(), updateButtons))
+			{
+				e1.ShowDialog();
+			}
+		}
+
+		private void groupBox2_Enter(object sender, EventArgs e)
+		{
+
+		}
+
+		private void button29_Click(object sender, EventArgs e)
+		{
+			refreshDescribe();
 		}
 	}
 }
