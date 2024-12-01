@@ -12,6 +12,8 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using Vector2 = MathBase.Vector2;
 using System.ComponentModel;
+using Microsoft.Office.Interop.Excel;
+using System.Reflection;
 
 namespace LabDataHelper
 {
@@ -56,7 +58,7 @@ namespace LabDataHelper
 		int lastSelect = -1;
 
 		int lastSelectDataset = -1;
-		string fsNmae;
+		string fsName;
 		public Form1()
 		{
 			InitializeComponent();
@@ -83,12 +85,21 @@ namespace LabDataHelper
 			bitmanpCross.drawCross_45(21, Color.Black.toInt(), new Vector2(22, 20));
 			pictureBox2.Image = bitmanpCross.toBitmap();
 
-			rootPath = dataPath = Application.StartupPath + "data";
+			rootPath = dataPath = System.Windows.Forms.Application.StartupPath + "data";
 			pictureBox1.MouseClick += (o, e) =>
 			{
 
 			};
 			FFTHelper.setPreLength(20);
+
+			comboBox1.KeyPress += (o, e) => {
+				if (e.KeyChar == System.Convert.ToChar(13))
+				{ e.Handled = true; }
+			};
+			comboBox2.KeyPress += (o, e) => {
+				if (e.KeyChar == System.Convert.ToChar(13))
+				{ e.Handled = true; }
+			};
 			comboBox1.KeyDown += (o, e) =>
 			{
 
@@ -97,9 +108,25 @@ namespace LabDataHelper
 					manager[lastSelectDataset].name = comboBox1.Text;
 					updateCombo1();
 					comboBox1.SelectedIndex = lastSelectDataset;
+					e.Handled = true;
 				}
 			};
+			comboBox2.KeyDown += (o, e) =>
+			{
 
+				if (e.KeyCode == Keys.Enter && lastSelectDataset > -1 && lastSelectDataset < manager.Count)
+				{
+					if (comboBox1.SelectedItem is DataSet && lastSelect > -1)
+					{
+
+						try
+						{
+							manager.changeValue(comboBox1.SelectedIndex, lastSelect, double.Parse(comboBox2.Text));
+						}
+						catch { }
+					}
+				}
+			};
 			textBox2.MouseWheel += (o, e) =>
 			{
 				if (e.Delta > 0)
@@ -117,7 +144,7 @@ namespace LabDataHelper
 			{
 
 				string s = saveFileDialog1.FileName;
-				fsNmae = s;
+				fsName = s;
 
 			};
 			comboBox3.TextChanged += nameChanged;
@@ -135,6 +162,9 @@ namespace LabDataHelper
 				loadDefaultButtons();
 			}
 			updateInfo();
+			textBox2.KeyPress += (o, e) => {
+				if (e.KeyChar == System.Convert.ToChar(13))
+				{ e.Handled = true; } };
 
 			textBox2.PreviewKeyDown += (o, e) =>
 				{
@@ -156,7 +186,6 @@ namespace LabDataHelper
 							codeInput();
 							textBox2.Focus();
 						}
-
 					}
 					else if (e.KeyCode == Keys.Up)
 					{
@@ -337,7 +366,7 @@ namespace LabDataHelper
 					try
 					{
 
-						refdata = manager.getDataFromDescribe(manager.Count, rc, false);
+						refdata = manager.getDataFromDescribe(manager.Count, rc);
 					}
 					catch
 					{
@@ -371,7 +400,7 @@ namespace LabDataHelper
 				{
 					rc = refConverter;
 				}
-				double[] refdata = manager.getDataFromDescribe(manager.Count, rc, false);
+				double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
 				for (int i = 0; i < refdata.Length; i++)
 				{
 					map.Add((manager[i].Mean, refdata[i]));
@@ -381,30 +410,32 @@ namespace LabDataHelper
 
 
 
-			/*
-			managerM.regiseterMethod("Merge", (a, b) =>
+			
+			managerM.regiseterMethod("merge", (a, b) =>
 			{
 				try
 				{
-					string path = "data\\" + b[0].Item1 + ".data";
+					string path = dataPath+"\\" + b[0].Item1 + ".data";
+					
 					if(File.Exists(path))
 					{
-						manager.Merge(path);
+						manager.merge(DataManager.loadFile(path));
+						updateCombo1();
 					}
 				}
-				catch
+				catch(Exception e)
 				{
-
 				}
 				return (null, d => d[0]);
 			}); 
-			*/
+			
 
 			managerM.regiseterMethod("reorder", (a, b) =>
 			{
 				try
 				{
 					manager.orderByDescribe();
+					updateCombo1();
 				}
 				catch
 				{
@@ -759,6 +790,28 @@ namespace LabDataHelper
 
 		}
 
+		void saveTxt(string path)
+		{
+			using (FileStream file = new FileStream(path, FileMode.Create))
+			{
+				using (StreamWriter writer = new StreamWriter(file))
+
+				{
+
+
+					double[] rdata = manager.getDataFromMean(manager.Count, converter);
+					double[] refdata = manager.getDataFromDescribe(manager.Count, refConverter);
+					for (int i = 0; i < rdata.Length; i++)
+					{
+						writer.WriteLine("参考:" + refdata[i] + " 测量:" + rdata[i]);
+					}
+					writer.Flush();
+					file.Flush();
+
+				}
+			}
+		}
+
 		void addWithColor(string text, StringBuilder sb, List<int> pos, List<int> length, int line)
 		{
 
@@ -826,7 +879,7 @@ namespace LabDataHelper
 						rc = refConverter;
 					}
 					double[] rdata = manager.getDataFromMean(index + 1, converter);
-					double[] refdata = manager.getDataFromDescribe(manager.Count, rc, false);
+					double[] refdata = manager.getDataFromDescribe(manager.Count, rc);
 					//r2
 					double refd = refdata[index].keep(2);
 					double readd = rdata[index].keep(2);
@@ -840,7 +893,7 @@ namespace LabDataHelper
 					else
 					{
 
-						addWithColor("[相差:" + (readd-refd ).keep(2) + unit + "] ", sb, redPos, redLength, line);
+						addWithColor("[相差:" + (readd - refd).keep(2) + unit + "] ", sb, redPos, redLength, line);
 					}
 					if (r2 >= (double)numericUpDown4.Value)
 					{
@@ -889,6 +942,7 @@ namespace LabDataHelper
 		{
 			if (comboBox1.SelectedItem is DataSet && lastSelect > -1)
 			{
+			
 				try
 				{
 					manager.changeValue(comboBox1.SelectedIndex, lastSelect, double.Parse(comboBox2.Text));
@@ -1208,13 +1262,21 @@ namespace LabDataHelper
 
 		}
 
+
 		private void button11_Click(object sender, EventArgs e)
 		{
-			saveFileDialog1.Filter = "Excel表格|*.xlsx";
+			saveFileDialog1.Filter = "Excel表格|*.xlsx|文本文件|*.txt";
 			DialogResult r = saveFileDialog1.ShowDialog();
 			if (r == DialogResult.OK)
 			{
-				helper.saveExcel(fsNmae, 2, 2, converter, unit, refConverter);
+				if (saveFileDialog1.FilterIndex == 0)
+				{
+					helper.saveExcel(fsName, 2, 2, converter, unit, refConverter);
+				}
+				else
+				{
+					saveTxt(fsName);
+				}
 
 			}
 
@@ -1489,9 +1551,13 @@ namespace LabDataHelper
 			refreshInfo();
 		}
 
-		private void button30_Click(object sender, EventArgs e)
+
+
+		private void button30_Click_1(object sender, EventArgs e)
 		{
-			refreshInfo();
+			richTextBox4.Clear();
 		}
+
 	}
 }
+
