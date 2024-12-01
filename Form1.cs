@@ -245,7 +245,7 @@ namespace LabDataHelper
 
 
 
-			managerM.regiseterMethod("c1replace", (a, b) =>
+			managerM.regiseterMethod("ddreplace", (a, b) =>
 			{
 				richTextBox1.Text = replace(richTextBox1.Text, b[0].Item1, ";", b[1].Item1 + ";");
 				managerM.clear();
@@ -324,12 +324,39 @@ namespace LabDataHelper
 				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
 				//DataManager nm = new DataManager(manager.name, manager.describe);
 				DataConverter d = null;
-				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager);
+				bool sz = false;
+				if(b.Length>=3&& managerM.Run(b[2].Item1).getValue()>0)
+				{
+					sz=true;
+				}
+				angleControl.moveAndRecordRaw(managerM.Run(b[0].Item1).getValue(), (int)managerM.Run(b[1].Item1).getValue(), manager,sz);
 
 
 				return (null, d => d[0]);
 			});
+			managerM.regiseterMethod("record", (a, b) =>
+			{
 
+				angleControl.setIndexSelect(managerM.Run(textBox1.Text).getValue);
+				//DataManager nm = new DataManager(manager.name, manager.describe);
+			
+				int count = 1;
+				double t = 1;
+
+				if(b.Length>0)
+				{
+					count = (int)managerM.Run(b[0].Item1).getValue();
+				}
+				if (b.Length >1)
+				{
+					t = managerM.Run(b[1].Item1).getValue();
+				}
+
+				angleControl.record(manager,count, t);
+
+
+				return (null, d => d[0]);
+			});
 			managerM.registerMathFunc("lf", map, 1);
 
 
@@ -888,7 +915,7 @@ namespace LabDataHelper
 					line++;
 					if (Math.Abs(refd - readd) < maxRef)
 					{
-						addWithColor("[相差:" + (refd - readd).keep(2) + unit + "] ", sb, greenPos, greenLength, line);
+						addWithColor("[相差:" + (  readd-refd).keep(2) + unit + "] ", sb, greenPos, greenLength, line);
 					}
 					else
 					{
@@ -1529,7 +1556,7 @@ namespace LabDataHelper
 
 		void loadDefaultButtons()
 		{
-			updateButtons("归零正:peak(25,2);运行正:mar(0.08,56);归零负:peak(-25,2);运行负:mar(-0.08,56);对齐数据:align(0,x/2000);标定:lfaddr;应用标定:c1replace(data=,data=lf(x));清空缓存:lfclear;");
+			updateButtons("归零正:peak(25,2);运行正:mar(0.08,56);归零负:peak(-25,2);运行负:mar(-0.08,56);对齐数据:align(0,x/2000);标定:lfaddr;应用标定:ddreplace(data=,data=lf(x));清空缓存:lfclear;");
 		}
 
 		private void button28_Click(object sender, EventArgs e)

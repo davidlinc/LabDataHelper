@@ -183,7 +183,7 @@ namespace LabDataHelper
 			}
 		}
 
-		public void setZero(DataManager ma)
+		public void setZero()
 		{
 
 			Task.Run(() =>
@@ -223,7 +223,7 @@ namespace LabDataHelper
         }
 
 	
-		public bool record(DataManager ma)
+		public bool record(DataManager ma,int count,double time)
 		{
 			if (current == null)
 			{
@@ -231,7 +231,7 @@ namespace LabDataHelper
 
 
 					current = new TaskFlag();
-					await record_(ma);
+					await record_(ma,count,time);
 					current = null;
 
 
@@ -244,7 +244,7 @@ namespace LabDataHelper
 				return false;
 			}
 		}
-		public bool moveAndRecordRaw(double dx, int times, DataManager ma)
+		public bool moveAndRecordRaw(double dx, int times, DataManager ma,bool setZero)
 		{
 			if (current == null)
 			{
@@ -252,7 +252,7 @@ namespace LabDataHelper
 
 				
 					current = new TaskFlag();
-					await moveAndRecordRaw_(dx, times, ma);
+					await moveAndRecordRaw_(dx, times, ma,setZero);
 					current = null;
 			
 
@@ -265,7 +265,7 @@ namespace LabDataHelper
 					return false;
 			}
 		}
-		 async Task record_(DataManager ma)
+		 async Task record_(DataManager ma,int count,double s)
 		{
 			await Task.Run(() =>
 			{
@@ -273,41 +273,44 @@ namespace LabDataHelper
 				int index;
 				bool stop = true;
 
-
-
-				int first = index = ma.addNewData(name.ToString(), posRealtime.ToString());
-				onAngleUpdate = (s) =>
+				while (count > 0&&taskRun)
 				{
 
-					ma.changeDescribe(index, (double.Parse(ma[index].describe) - zeroPos).ToString());
-					lock (rawData)
+					int first = index = ma.addNewData(name.ToString(),(name*s).ToString());
+					onAngleUpdate = (s) =>
 					{
-						for (int j = 0; j < rawData.Length; j++)
+
+						lock (rawData)
 						{
-							if (selectIndex(j) > 0)
+							for (int j = 0; j < rawData.Length; j++)
 							{
+								if (selectIndex(j) > 0)
+								{
 
-								ma.addValue(index, rawData[j], false);
+									ma.addValue(index, rawData[j], false);
+								}
+
 							}
+							foreach (var item in rawData)
+							{
+							}
+						}
+						Volatile.Write(ref stop, false);
+					};
+					onError = s =>
+						Volatile.Write(ref stop, false); ;
+					angle.update();
 
-						}
-						foreach (var item in rawData)
-						{
-						}
+					while (Volatile.Read(ref stop)&&taskRun)
+					{
 					}
-					Volatile.Write(ref stop, false);
-				};
-				onError = s =>
-					Volatile.Write(ref stop, false); ;
-				angle.update();
-
-				while (Volatile.Read(ref stop))
-				{
+					Thread.Sleep((int)(s*1000));
+					count--;
+					name++;
 				}
-
 			});
 		}
-		 async Task moveAndRecordRaw_(double dx, int times, DataManager ma)
+		 async Task moveAndRecordRaw_(double dx, int times, DataManager ma,bool setZeroV=false)
 		{
 		  await	Task.Run(() =>
 			{
@@ -316,13 +319,18 @@ namespace LabDataHelper
 				bool stop = true;
 
               int first=  index = ma.addNewData(name.ToString(), posRealtime.ToString());
-
+				double offset = 0;
 
 
 				onAngleUpdate = (s) =>
 				{
-                   
-                    ma.changeDescribe(index, (double.Parse(ma[index].describe) - zeroPos).ToString());
+					if(setZeroV)
+					{
+
+						offset = posRealtime - angle2pos(angleRealtime);
+
+					}
+                    ma.changeDescribe(index, (double.Parse(ma[index].describe) -offset).ToString());
                     lock (rawData)
 					{
 						for (int j = 0; j < rawData.Length; j++)
@@ -353,7 +361,7 @@ namespace LabDataHelper
 
 					Move(dx);
 					wait();
-					index = ma.addNewData(name.ToString(),( posRealtime-zeroPos).ToString());
+					index = ma.addNewData(name.ToString(),( posRealtime-offset).ToString());
 					name++;
 					onAngleUpdate = (s) =>
 					{
