@@ -278,7 +278,7 @@
 			// 
 			// button10
 			// 
-			button10.Location = new Point(184, 658);
+			button10.Location = new Point(261, 790);
 			button10.Margin = new Padding(4);
 			button10.Name = "button10";
 			button10.Size = new Size(152, 46);
@@ -289,7 +289,7 @@
 			// 
 			// numericUpDown1
 			// 
-			numericUpDown1.Location = new Point(288, 752);
+			numericUpDown1.Location = new Point(265, 749);
 			numericUpDown1.Margin = new Padding(4);
 			numericUpDown1.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
 			numericUpDown1.Name = "numericUpDown1";
@@ -300,7 +300,7 @@
 			// label5
 			// 
 			label5.AutoSize = true;
-			label5.Location = new Point(218, 760);
+			label5.Location = new Point(195, 757);
 			label5.Margin = new Padding(4, 0, 4, 0);
 			label5.Name = "label5";
 			label5.Size = new Size(62, 31);
@@ -311,7 +311,7 @@
 			// label6
 			// 
 			label6.AutoSize = true;
-			label6.Location = new Point(32, 760);
+			label6.Location = new Point(9, 757);
 			label6.Margin = new Padding(4, 0, 4, 0);
 			label6.Name = "label6";
 			label6.Size = new Size(62, 31);
@@ -320,7 +320,7 @@
 			// 
 			// numericUpDown2
 			// 
-			numericUpDown2.Location = new Point(104, 752);
+			numericUpDown2.Location = new Point(81, 749);
 			numericUpDown2.Margin = new Padding(4);
 			numericUpDown2.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
 			numericUpDown2.Name = "numericUpDown2";
@@ -425,7 +425,7 @@
 			// 
 			// textBox3
 			// 
-			textBox3.Location = new Point(344, 663);
+			textBox3.Location = new Point(193, 792);
 			textBox3.Margin = new Padding(4);
 			textBox3.Name = "textBox3";
 			textBox3.Size = new Size(64, 38);
@@ -446,7 +446,7 @@
 			// 
 			// numericUpDown3
 			// 
-			numericUpDown3.Location = new Point(104, 800);
+			numericUpDown3.Location = new Point(81, 797);
 			numericUpDown3.Margin = new Padding(4);
 			numericUpDown3.Name = "numericUpDown3";
 			numericUpDown3.Size = new Size(104, 38);
@@ -455,7 +455,7 @@
 			// label9
 			// 
 			label9.AutoSize = true;
-			label9.Location = new Point(32, 804);
+			label9.Location = new Point(9, 801);
 			label9.Margin = new Padding(4, 0, 4, 0);
 			label9.Name = "label9";
 			label9.Size = new Size(62, 31);

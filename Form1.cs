@@ -840,7 +840,7 @@ namespace LabDataHelper
 					else
 					{
 
-						addWithColor("[ПаІо:" + (refd - readd).keep(2) + unit + "] ", sb, redPos, redLength, line);
+						addWithColor("[ПаІо:" + (readd-refd ).keep(2) + unit + "] ", sb, redPos, redLength, line);
 					}
 					if (r2 >= (double)numericUpDown4.Value)
 					{
@@ -920,7 +920,15 @@ namespace LabDataHelper
 			comboBox2.SelectedItem = null;
 			comboBox2.Text = "";
 			updateSetInfo(converter, unit);
-			richTextBox3.SelectionStart=richTextBox3.Text.Length;
+			richTextBox3.SelectionStart = richTextBox3.Text.Length;
+			richTextBox3.ScrollToCaret();
+		}
+
+		void refreshInfo()
+		{
+
+			updateSetInfo(converter, unit);
+			richTextBox3.SelectionStart = richTextBox3.Text.Length;
 			richTextBox3.ScrollToCaret();
 		}
 
@@ -1478,6 +1486,12 @@ namespace LabDataHelper
 		private void button29_Click(object sender, EventArgs e)
 		{
 			refreshDescribe();
+			refreshInfo();
+		}
+
+		private void button30_Click(object sender, EventArgs e)
+		{
+			refreshInfo();
 		}
 	}
 }
