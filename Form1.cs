@@ -1296,7 +1296,7 @@ namespace LabDataHelper
 			DialogResult r = saveFileDialog1.ShowDialog();
 			if (r == DialogResult.OK)
 			{
-				if (saveFileDialog1.FilterIndex == 0)
+				if (saveFileDialog1.FilterIndex == 1)
 				{
 					helper.saveExcel(fsName, 2, 2, converter, unit, refConverter);
 				}
